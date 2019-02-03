@@ -10,7 +10,7 @@ public class basic_bullet : MonoBehaviour
     void Start()
     {
         _rb = GetComponent<Rigidbody2D>();
-        float rotation = transform.rotation.z * Mathf.PI; //rotation in radians
+        float rotation = transform.rotation.eulerAngles.z / 180 * Mathf.PI; //rotation in radians
         Debug.Log(transform.rotation.eulerAngles.z);
         //Debug.Log(Mathf.Cos(rotation));
         _rb.velocity = new Vector2(Mathf.Cos(rotation), Mathf.Sin(rotation)) * Speed;
