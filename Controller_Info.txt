@@ -1,0 +1,24 @@
+Controller Input Information:
+
+For player 1, set joy num to Joystick 1
+For player 2, set joy num to Joystick 2
+
+Controller mapping for Windows
+
+Left control stick: set type to joystick axis
+X-axis for left and right. Snap but no invert
+Y-axis for up and down. Snap and invert
+
+Right control stick: set type to joystick axis
+4th axis for left and right. Snap but no invert
+5th axis for up and down. Snap and invert
+
+Left trigger: set type to joystick axis, 9th Axis
+Right trigger: set type to joystick axis, 10th Axis
+
+For A button: set type to key or mouse button
+alt positive button = joystick button 0
+
+Controller mapping for Mac
+TBA if necessary
+
