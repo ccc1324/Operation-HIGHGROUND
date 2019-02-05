@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class basic_movement : MonoBehaviour
+public class BasicMoovement : MonoBehaviour
 {
     private Rigidbody2D _rb;
 
