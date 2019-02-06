@@ -10,8 +10,8 @@ public class ChaserMovement : MonoBehaviour
      * Is able to be stunned
      * Can jump in midair
      */
-    public float Move_Speed = 100f;
-    public float Move_Constant = 1f;
+    public float Move_Speed = 1f;
+    public float Move_Constant = 100f;
     public float Jump_Force = 100f;
     public float Jump_Cooldown = 0.5f;
     private int _player;
@@ -29,8 +29,10 @@ public class ChaserMovement : MonoBehaviour
     private void FixedUpdate()
     {
         float movement = Input.GetAxis("Horizontal_p" + _player);
-        if (movement != 0 && !_stunned)
+        if (Mathf.Abs(movement) > 0.9f && !_stunned)
             Move(movement);
+        else
+            StopMoving();
 
         if (Input.GetButtonDown("Jump_p" + _player))
             Jump();
@@ -64,6 +66,13 @@ public class ChaserMovement : MonoBehaviour
             _rigidbody.AddForce(new Vector2(newSpeed, 0));
         else
             _rigidbody.AddForce(new Vector2(-newSpeed, 0));
+    }
+
+    private void StopMoving()
+    {
+        float velocityY = _rigidbody.velocity.y;
+        Vector2 v2 = new Vector2(0, velocityY);
+        _rigidbody.velocity = v2;
     }
 
     private void Jump()

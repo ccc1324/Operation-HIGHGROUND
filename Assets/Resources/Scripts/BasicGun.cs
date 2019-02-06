@@ -18,6 +18,7 @@ public class BasicGun : MonoBehaviour
         _player = PlayerController();
         _holder = transform;
         _cam = FindObjectOfType<Camera>();
+        BulletPrefab = (GameObject)Resources.Load("Prefabs/BasicBullet", typeof(GameObject));
     }
 
     void Update()
