@@ -24,7 +24,9 @@ public class BasicGun : MonoBehaviour
     void Update()
     {
         if (Input.GetAxis("Fire_p" + _player) > 0 || Input.GetButton("Fire_p" + _player))
-            Shoot();
+        {         
+            Shoot();          
+        }
     }
 
     public void Shoot()

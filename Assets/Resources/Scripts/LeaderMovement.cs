@@ -33,8 +33,10 @@ public class LeaderMovement : MonoBehaviour
         else
             StopMoving();
 
-        if (Input.GetButtonDown("Jump_p" + _player))
-            Jump();
+        if (Input.GetButtonDown("JumpA_p" + _player) || Input.GetAxis("JumpA_p" + _player) > 0 || Input.GetButtonDown("JumpB_p" + _player) || Input.GetAxis("JumpB_p" + _player) > 0)
+        {         
+            Jump();          
+        }
     }
 
     private int PlayerController()
@@ -74,10 +76,10 @@ public class LeaderMovement : MonoBehaviour
     }
 
     private void Jump()
-    {
+    {       
         if (_canJump)
         {
-            _rigidbody.AddForce(new Vector2(0, Jump_Force));
+            _rigidbody.AddForce(new Vector2(0, Jump_Force));          
         }
     }
 
@@ -86,7 +88,9 @@ public class LeaderMovement : MonoBehaviour
         if (collision.gameObject.GetComponent<Platform>() != null)
         {
             if (_rigidbody.position.y >= collision.gameObject.GetComponent<Platform>().getRigidBody().position.y)
-                _canJump = true;
+            {
+                _canJump = true;     
+            }
         }
     }
 
@@ -94,7 +98,7 @@ public class LeaderMovement : MonoBehaviour
     {
         if (collision.gameObject.GetComponent<Platform>() != null)
         {
-            _canJump = false;
+            _canJump = false;           
         }
     }
 

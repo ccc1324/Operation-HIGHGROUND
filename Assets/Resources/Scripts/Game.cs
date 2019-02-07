@@ -6,10 +6,13 @@ public class Game : MonoBehaviour
 {
 
     public static Game game;
-    public GameObject[] players;
+    private GameObject[] players;
+    private GameObject leader; 
 
     void Start()
     {
+        game = this;
+        leader = GameObject.Find("Player1"); //Temporary
         players = GameObject.FindGameObjectsWithTag("Player");
     }
 
@@ -29,22 +32,31 @@ public class Game : MonoBehaviour
             index++;
         }
 
+        leader = players[leader_index];
+
         //Activates the leadermovement script and deactivates the chasermovement script for the first place player
-        players[leader_index].GetComponent<LeaderMovement>().enabled = true;
-        players[leader_index].GetComponent<BasicGun>().enabled = true;
-        players[leader_index].GetComponent<ChaserMovement>().enabled = false;
+        leader.GetComponent<LeaderMovement>().enabled = true;
+        leader.GetComponent<BasicGun>().enabled = true;
+        leader.GetComponent<generatePlatforms>().enabled = true;
+        leader.GetComponent<ChaserMovement>().enabled = false;
 
         //Activates the chasermovement script and deactivates the leadermovement script for all the other players
         foreach (GameObject p in players)
         {
-            if (!p.Equals(players[leader_index]))
+            if (!p.Equals(leader))
             {
                 p.GetComponent<LeaderMovement>().enabled = false;
                 p.GetComponent<BasicGun>().enabled = false;
+                p.GetComponent<generatePlatforms>().enabled = false;
                 p.GetComponent<ChaserMovement>().enabled = true;
             }
         }
 
+    }
+
+    public GameObject GetLeader()
+    {
+        return leader;
     }
 
 
