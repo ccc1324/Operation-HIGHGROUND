@@ -27,6 +27,7 @@ public class BasicGun : MonoBehaviour
         {         
             Shoot();          
         }
+        Debug.Log(Input.GetAxis("AimX_p" + _player));
     }
 
     public void Shoot()
@@ -36,9 +37,8 @@ public class BasicGun : MonoBehaviour
         //float angle = Mathf.Atan2(direction.y, direction.x) * 360 / (2 * Mathf.PI);
 
         //Controls for controller
-        Debug.Log(Input.GetAxis("AimX_p" + _player));
-        float xaxis = Input.GetAxis("AimX_p" + _player);
-        float yaxis = Input.GetAxis("AimY_p" + _player);
+        float xaxis = Input.GetAxisRaw("AimX_p" + _player);
+        float yaxis = Input.GetAxisRaw("AimY_p" + _player);
         float angle = Mathf.Atan2(yaxis, xaxis) * 360 / (2 * Mathf.PI);
 
         Quaternion rotation = Quaternion.Euler(0, 0, angle);

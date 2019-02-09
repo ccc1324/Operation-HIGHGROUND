@@ -9,10 +9,8 @@ public class LeaderMovement : MonoBehaviour
      * Movement script used by "Leader" players
      * 
      */
-    public float Move_Speed = 1f;
-    public float Move_Constant = 1f;
-    public float Jump_Force = 100f;
-    public float Jump_Cooldown = 0.5f;
+    public float Move_Speed = 1000f;
+    public float Jump_Force = 1700f;
     private int _player;
     private Rigidbody2D _rigidbody;
 
@@ -25,6 +23,14 @@ public class LeaderMovement : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody2D>();
     }
 
+    private void Update()
+    {
+        if (Input.GetButtonDown("JumpA_p" + _player) || Input.GetButtonDown("JumpB_p" + _player))
+        {
+            Jump();
+        }
+    }
+
     private void FixedUpdate()
     {
         float movement = Input.GetAxis("Horizontal_p" + _player);
@@ -32,47 +38,19 @@ public class LeaderMovement : MonoBehaviour
             Move(movement);
         else
             StopMoving();
-
-        if (Input.GetButtonDown("JumpA_p" + _player) || Input.GetAxis("JumpA_p" + _player) > 0 || Input.GetButtonDown("JumpB_p" + _player) || Input.GetAxis("JumpB_p" + _player) > 0)
-        {         
-            Jump();          
-        }
-    }
-
-    private int PlayerController()
-    {
-        string name = gameObject.name;
-        switch (name)
-        {
-            case "Player1":
-                return 1;
-            case "Player2":
-                return 2;
-            case "Player3":
-                return 3;
-            case "Player4":
-                return 4;
-            default:
-                Debug.LogError("Player object must be name Playerx, with x being the number of the player");
-                return 0;
-        }
     }
 
     private void Move(float direction)
     {
-        float currentSpeed = _rigidbody.velocity.x;
-        float newSpeed = Mathf.Abs(currentSpeed - Move_Speed) / Move_Constant;
         if (direction > 0)
-            _rigidbody.AddForce(new Vector2(newSpeed, 0));
+            _rigidbody.velocity = new Vector2(Move_Speed * Time.fixedDeltaTime, _rigidbody.velocity.y);
         else
-            _rigidbody.AddForce(new Vector2(-newSpeed, 0));
+            _rigidbody.velocity = new Vector2(-Move_Speed * Time.fixedDeltaTime, _rigidbody.velocity.y);
     }
 
     private void StopMoving()
     {
-        float velocityY = _rigidbody.velocity.y;
-        Vector2 v2 = new Vector2(0, velocityY);
-        _rigidbody.velocity = v2;
+        _rigidbody.velocity = new Vector2(0, _rigidbody.velocity.y);
     }
 
     private void Jump()
@@ -102,4 +80,22 @@ public class LeaderMovement : MonoBehaviour
         }
     }
 
+    private int PlayerController()
+    {
+        string name = gameObject.name;
+        switch (name)
+        {
+            case "Player1":
+                return 1;
+            case "Player2":
+                return 2;
+            case "Player3":
+                return 3;
+            case "Player4":
+                return 4;
+            default:
+                Debug.LogError("Player object must be name Playerx, with x being the number of the player");
+                return 0;
+        }
+    }
 }
