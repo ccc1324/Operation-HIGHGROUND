@@ -23,7 +23,7 @@ public class BasicBullet : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         ChaserMovement movement = collision.GetComponent<ChaserMovement>(); //find unique movement component to Chasers
-        if (movement != null) //if object hit is a Chaser (not first position player)
+        if (movement != null && movement.isActiveAndEnabled) //if object hit is a Chaser (not first position player)
         {
             movement.Stun(Stun_Duration);
             Destroy(gameObject);

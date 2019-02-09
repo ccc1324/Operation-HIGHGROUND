@@ -27,8 +27,7 @@ public class ChaserMovement : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log(_stunned);
-        if (Input.GetButtonDown("JumpA_p" + _player) || Input.GetButtonDown("JumpB_p" + _player) && !_stunned)
+        if ((Input.GetButtonDown("JumpA_p" + _player) || Input.GetButtonDown("JumpB_p" + _player)) && !_stunned)
         {
             Jump();
         }
@@ -82,8 +81,11 @@ public class ChaserMovement : MonoBehaviour
 
     public void Stun(float stunDuration)
     {
-        _stunned = true;
-        Invoke("ParalyzeHeal", stunDuration);
+        if (!_stunned) //don't want people to be perma-stunned, and also makes it so that ParalyzeHeal won't be called randomly
+        {
+            _stunned = true;
+            Invoke("ParalyzeHeal", stunDuration);
+        }
     }
 
     public void ParalyzeHeal()

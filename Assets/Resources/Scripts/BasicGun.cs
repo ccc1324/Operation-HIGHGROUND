@@ -9,10 +9,12 @@ public class BasicGun : MonoBehaviour
      * Will allow a player to shoot the attached bullet
      * Sets rotation of the bullet to direction player is shooting
      */
+    public float ReloadTime = 1;
     public GameObject BulletPrefab;
     private int _player;
     private Transform _holder;
     private Camera _cam;
+    private float _time_last_shot = -100; //initialized to -100 so that there isn't an initial reload time
 
     void Start() {
         _player = PlayerController();
@@ -24,10 +26,13 @@ public class BasicGun : MonoBehaviour
     void Update()
     {
         if (Input.GetAxis("Fire_p" + _player) > 0 || Input.GetButton("Fire_p" + _player))
-        {         
-            Shoot();          
+        {
+            if (Time.time - _time_last_shot > ReloadTime)
+            {
+                Shoot();
+                _time_last_shot = Time.time;
+            }      
         }
-        Debug.Log(Input.GetAxis("AimX_p" + _player));
     }
 
     public void Shoot()
