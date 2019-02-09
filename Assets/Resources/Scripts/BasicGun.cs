@@ -18,12 +18,15 @@ public class BasicGun : MonoBehaviour
         _player = PlayerController();
         _holder = transform;
         _cam = FindObjectOfType<Camera>();
+        BulletPrefab = (GameObject)Resources.Load("Prefabs/BasicBullet", typeof(GameObject));
     }
 
     void Update()
     {
         if (Input.GetAxis("Fire_p" + _player) > 0 || Input.GetButton("Fire_p" + _player))
-            Shoot();
+        {         
+            Shoot();          
+        }
     }
 
     public void Shoot()

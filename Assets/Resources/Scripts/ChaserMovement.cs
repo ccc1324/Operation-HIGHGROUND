@@ -10,7 +10,7 @@ public class ChaserMovement : MonoBehaviour
      * Is able to be stunned
      * Can jump in midair
      */
-    public float Move_Speed = 100f;
+    public float Move_Speed = 1f;
     public float Move_Constant = 1f;
     public float Jump_Force = 100f;
     public float Jump_Cooldown = 0.5f;
@@ -29,11 +29,15 @@ public class ChaserMovement : MonoBehaviour
     private void FixedUpdate()
     {
         float movement = Input.GetAxis("Horizontal_p" + _player);
-        if (movement != 0 && !_stunned)
+        if (Mathf.Abs(movement) > 0.9f && !_stunned)
             Move(movement);
+        else
+            StopMoving();
 
-        if (Input.GetButtonDown("Jump_p" + _player))
-            Jump();
+        if(Input.GetButtonDown("JumpA_p" + _player) || Input.GetAxis("JumpA_p" + _player) > 0 || Input.GetButtonDown("JumpB_p" + _player) || Input.GetAxis("JumpB_p" + _player) > 0)
+        {          
+            Jump();      
+        }
 
     }
 
@@ -66,11 +70,37 @@ public class ChaserMovement : MonoBehaviour
             _rigidbody.AddForce(new Vector2(-newSpeed, 0));
     }
 
-    private void Jump()
+    private void StopMoving()
     {
+        float velocityY = _rigidbody.velocity.y;
+        Vector2 v2 = new Vector2(0, velocityY);
+        _rigidbody.velocity = v2;
+    }
+
+    private void Jump()
+    {      
         if (_canJump)
         {
-            _rigidbody.AddForce(new Vector2(0, Jump_Force));
+            _rigidbody.AddForce(new Vector2(0, Jump_Force));           
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.GetComponent<Platform>() != null)
+        {
+            if (_rigidbody.position.y >= collision.gameObject.GetComponent<Platform>().getRigidBody().position.y)
+            {
+                _canJump = true;
+            }
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.GetComponent<Platform>() != null)
+        {
+            _canJump = false;           
         }
     }
 
