@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BasicMoovement : MonoBehaviour
+public class BasicMovement : MonoBehaviour
 {
     private Rigidbody2D _rb;
 
@@ -11,14 +11,19 @@ public class BasicMoovement : MonoBehaviour
         _rb = GetComponent<Rigidbody2D>();
     }
 
-    void FixedUpdate()
+    private void Update()
+    {
+        if (Input.GetKeyDown("w"))
+            _rb.AddForce(new Vector2(0, 1700));
+    }
+
+    private void FixedUpdate()
     {
         if (Input.GetKey("a"))
-            _rb.AddForce(new Vector2(-50, 0));
-        if (Input.GetKey("d"))
-            _rb.AddForce(new Vector2(50, 0));
-        if (Input.GetKeyDown("w"))
-            _rb.AddForce(new Vector2(0, 200));
-
+            _rb.velocity = new Vector2(-1000 * Time.fixedDeltaTime, _rb.velocity.y);
+        else if (Input.GetKey("d"))
+            _rb.velocity = new Vector2(1000 * Time.fixedDeltaTime, _rb.velocity.y);
+        else
+            _rb.velocity = new Vector2(0, _rb.velocity.y);
     }
 }
