@@ -61,6 +61,7 @@ public class ChaserMovement : MonoBehaviour
         if (_jumps > 0)
         {
             _rigidbody.AddForce(new Vector2(0, Jump_Force));
+            _jumps--;
         }
     }
 
@@ -68,18 +69,10 @@ public class ChaserMovement : MonoBehaviour
     {
         if (collision.gameObject.GetComponent<Platform>() != null)
         {
-            if (_rigidbody.position.y >= collision.gameObject.GetComponent<Platform>().getRigidBody().position.y)
+            if (transform.position.y >= collision.gameObject.transform.position.y)
             {
                 _jumps = 2;
             }
-        }
-    }
-
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        if (collision.gameObject.GetComponent<Platform>() != null)
-        {
-            _jumps--;
         }
     }
 

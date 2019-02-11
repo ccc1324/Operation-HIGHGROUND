@@ -20,9 +20,9 @@ public class BasicMovement : MonoBehaviour
     private void FixedUpdate()
     {
         if (Input.GetKey("a"))
-            _rb.velocity = new Vector2(-1000 * Time.fixedDeltaTime, _rb.velocity.y);
+            _rb.velocity = new Vector2(-700 * Time.fixedDeltaTime, _rb.velocity.y);
         else if (Input.GetKey("d"))
-            _rb.velocity = new Vector2(1000 * Time.fixedDeltaTime, _rb.velocity.y);
+            _rb.velocity = new Vector2(700 * Time.fixedDeltaTime, _rb.velocity.y);
         else
             _rb.velocity = new Vector2(0, _rb.velocity.y);
     }
