@@ -11,25 +11,26 @@ public class ChaserMovement : MonoBehaviour
      * Can jump in midair
      */
 
-    public float Move_Speed = 1000f;
-    public float Jump_Force = 1700f;
+    public float Move_Speed = 700f;
+    public float Jump_Force = 1500f;
     private int _player;
     private Rigidbody2D _rigidbody;
 
-    private bool _canJump = false;
+    private int _jumps;
     private bool _stunned = false;
 
     void Start()
     {
         _player = PlayerController();
         _rigidbody = GetComponent<Rigidbody2D>();
+        _jumps = 0;
     }
 
     private void Update()
     {
         if ((Input.GetButtonDown("JumpA_p" + _player) || Input.GetButtonDown("JumpB_p" + _player)) && !_stunned)
-        {
-            Jump();
+        {           
+            Jump();          
         }
     }
 
@@ -56,8 +57,11 @@ public class ChaserMovement : MonoBehaviour
     }
 
     private void Jump()
-    {      
-        _rigidbody.AddForce(new Vector2(0, Jump_Force));           
+    {
+        if (_jumps > 0)
+        {
+            _rigidbody.AddForce(new Vector2(0, Jump_Force));
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -66,7 +70,7 @@ public class ChaserMovement : MonoBehaviour
         {
             if (_rigidbody.position.y >= collision.gameObject.GetComponent<Platform>().getRigidBody().position.y)
             {
-                _canJump = true;     
+                _jumps = 2;
             }
         }
     }
@@ -75,7 +79,7 @@ public class ChaserMovement : MonoBehaviour
     {
         if (collision.gameObject.GetComponent<Platform>() != null)
         {
-            _canJump = false;           
+            _jumps--;
         }
     }
 

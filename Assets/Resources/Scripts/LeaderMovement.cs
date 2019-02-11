@@ -9,18 +9,19 @@ public class LeaderMovement : MonoBehaviour
      * Movement script used by "Leader" players
      * 
      */
-    public float Move_Speed = 1000f;
-    public float Jump_Force = 1700f;
+    public float Move_Speed = 700f;
+    public float Jump_Force = 1500f;
     private int _player;
     private Rigidbody2D _rigidbody;
 
-    private bool _canJump = false;
+    private int _jumps;
     
 
     void Start()
     {
         _player = PlayerController();
         _rigidbody = GetComponent<Rigidbody2D>();
+        _jumps = 0;
     }
 
     private void Update()
@@ -55,9 +56,9 @@ public class LeaderMovement : MonoBehaviour
 
     private void Jump()
     {       
-        if (_canJump)
+        if (_jumps > 0)
         {
-            _rigidbody.AddForce(new Vector2(0, Jump_Force));          
+            _rigidbody.AddForce(new Vector2(0, Jump_Force));
         }
     }
 
@@ -67,7 +68,7 @@ public class LeaderMovement : MonoBehaviour
         {
             if (_rigidbody.position.y >= collision.gameObject.GetComponent<Platform>().getRigidBody().position.y)
             {
-                _canJump = true;     
+                _jumps = 1;    
             }
         }
     }
@@ -76,7 +77,7 @@ public class LeaderMovement : MonoBehaviour
     {
         if (collision.gameObject.GetComponent<Platform>() != null)
         {
-            _canJump = false;           
+            _jumps--;           
         }
     }
 
