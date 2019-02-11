@@ -10,15 +10,16 @@ public class GameManager : MonoBehaviour
      * Will update player's health periodically
      * Death is implemented in the HealthUpdate function
      */
+    public static GameManager instance = null;
 
     public Text Player1Health; //temporary
     public Text Player2Health; //temporary
-
 
     public float HealthTickDelay = 1;
     public int HealthTickDamage = 1;
     public int MaxHealth = 20;
     private float _time_since_healthdrain = 0;
+    public float maxHeightAchieved;
 
     private LevelManager _level_manager;
     private GameObject[] _players;
@@ -28,11 +29,16 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        if (instance == null)
+            instance = this;
+        else if (instance != this)
+            Destroy(gameObject);
         _level_manager = FindObjectOfType<LevelManager>();
         _players = GameObject.FindGameObjectsWithTag("Player");
         _player_components = new List<PlayerComponents>();
-        _leader = GameObject.Find("Fake Leader");
+        _leader = _players[0]; //temporary
         _leader_num = 0;
+        maxHeightAchieved = float.MinValue;
         //the point of player_components is we don't want to be calling GetComponent every Update cycle
         //apparently it can make the game laggy, so we want to "stash" those components
         foreach (GameObject player in _players)
@@ -59,6 +65,17 @@ public class GameManager : MonoBehaviour
                 _leader_num = GetPlayerNumber(player);
                 SetRoles();
                 SetPositions();
+
+                if (_leader.transform.position.y > maxHeightAchieved)
+                    maxHeightAchieved = _leader.transform.position.y;
+
+                if (player.transform.position.y < maxHeightAchieved - 5 ||
+                    player.transform.position.x < -10 ||
+                    player.transform.position.x > 13)
+                {
+                    player.transform.position = new Vector3(Random.Range(-4f, 4f), maxHeightAchieved, 0);
+                    player.GetComponent<Rigidbody2D>().velocity = new Vector3(0, 0, 0);
+                }
                 break;
             }
         }

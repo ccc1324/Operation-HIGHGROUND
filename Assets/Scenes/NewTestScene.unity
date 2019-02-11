@@ -384,10 +384,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cfc5b80171c12934db1f67249013f1af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Move_Speed: 1
-  Move_Constant: 1
-  Jump_Force: 100
-  Jump_Cooldown: 0.5
+  Move_Speed: 700
+  Jump_Force: 1500
 --- !u!114 &682873827
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -400,10 +398,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4c368bbd9ca04348a5f4999c2c45b39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Move_Speed: 1
-  Move_Constant: 1
-  Jump_Force: 500
-  Jump_Cooldown: 0.5
+  Move_Speed: 700
+  Jump_Force: 1500
 --- !u!61 &682873828
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -525,6 +521,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bb71757d74d7624f9e102f6cb6d2318, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ReloadTime: 1
   BulletPrefab: {fileID: 0}
 --- !u!114 &682873833
 MonoBehaviour:
@@ -575,10 +572,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cfc5b80171c12934db1f67249013f1af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Move_Speed: 100
-  Move_Constant: 1
-  Jump_Force: 100
-  Jump_Cooldown: 0.5
+  Move_Speed: 700
+  Jump_Force: 1500
 --- !u!50 &1653978204
 Rigidbody2D:
   serializedVersion: 4
@@ -700,10 +695,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4c368bbd9ca04348a5f4999c2c45b39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Move_Speed: 50
-  Move_Constant: 1
-  Jump_Force: 500
-  Jump_Cooldown: 0.5
+  Move_Speed: 700
+  Jump_Force: 1500
 --- !u!114 &1653978209
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -716,6 +709,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bb71757d74d7624f9e102f6cb6d2318, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ReloadTime: 1
   BulletPrefab: {fileID: 0}
 --- !u!114 &1653978210
 MonoBehaviour:

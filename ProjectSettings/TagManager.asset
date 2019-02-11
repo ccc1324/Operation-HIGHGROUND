@@ -6,6 +6,7 @@ TagManager:
   tags:
   - First
   - Platform
+  - Level
   layers:
   - Default
   - TransparentFX
