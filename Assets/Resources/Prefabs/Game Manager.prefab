@@ -39,8 +39,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1908492631556628660}
-  - component: {fileID: 9163992707560170191}
-  - component: {fileID: 7720066155627334679}
+  - component: {fileID: 2151802781793669939}
+  - component: {fileID: 8279662212169177034}
   m_Layer: 0
   m_Name: Game Manager
   m_TagString: Untagged
@@ -63,7 +63,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9163992707560170191
+--- !u!114 &2151802781793669939
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -72,20 +72,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1908492631556628661}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a2be03bd60aa6534fb8ccdc561239ff0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CurrentLevel: {fileID: 0}
---- !u!114 &7720066155627334679
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1908492631556628661}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 222c89d646c63d04faa69445199755b5, type: 3}
+  m_Script: {fileID: 11500000, guid: 84c09428b70651749a3491f58f5d61b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Player1Health: {fileID: 0}
@@ -93,3 +80,16 @@ MonoBehaviour:
   HealthTickDelay: 1
   HealthTickDamage: 1
   MaxHealth: 20
+--- !u!114 &8279662212169177034
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1908492631556628661}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f6a94bca0e1d0d4d896204d26b295b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CurrentLevel: {fileID: 0}
