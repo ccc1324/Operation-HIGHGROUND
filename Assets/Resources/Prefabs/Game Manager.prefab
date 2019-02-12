@@ -79,7 +79,7 @@ MonoBehaviour:
   Player2Health: {fileID: 0}
   HealthTickDelay: 1
   HealthTickDamage: 1
-  MaxHealth: 20
+  MaxHealth: 40
 --- !u!114 &8279662212169177034
 MonoBehaviour:
   m_ObjectHideFlags: 0

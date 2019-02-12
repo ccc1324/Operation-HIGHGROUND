@@ -68,12 +68,7 @@ public class ChaserMovement : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.GetComponent<Platform>() != null)
-        {
-            if (transform.position.y >= collision.gameObject.transform.position.y)
-            {
-                _jumps = 2;
-            }
-        }
+            _jumps = 2;        
     }
 
     public void Stun(float stunDuration)

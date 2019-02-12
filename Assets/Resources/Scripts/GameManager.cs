@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    /* Manages Overtaking, Health, and Death
+    /* Manages Overtaking, Health, Death, Camera, and level generation
      * If Overtaking occurs, will set roles and positions of players
      * Will update player's health periodically
      * Death is implemented in the HealthUpdate function
@@ -14,20 +14,28 @@ public class GameManager : MonoBehaviour
     public Text Player1Health; //temporary
     public Text Player2Health; //temporary
 
-
+    //health stuff
     public float HealthTickDelay = 1;
     public int HealthTickDamage = 1;
     public int MaxHealth = 20;
     private float _time_since_healthdrain = 0;
 
+    private Camera _camera;
     private LevelManager _level_manager;
     private GameObject[] _players;
     private List<PlayerComponents> _player_components;
+
     private GameObject _leader;
     private int _leader_num;
+    private float _camera_height;
+    private float _leader_height;
+    private float _total_level_height = 0;
+
 
     void Start()
     {
+        _camera = FindObjectOfType<Camera>();
+        _camera_height = _camera.transform.position.y;
         _level_manager = FindObjectOfType<LevelManager>();
         _players = GameObject.FindGameObjectsWithTag("Player");
         _player_components = new List<PlayerComponents>();
@@ -52,14 +60,18 @@ public class GameManager : MonoBehaviour
         //Overtaking management
         foreach (GameObject player in _players)
         {
-            //if overtaking occurs
-            if (player.transform.position.y > _leader.transform.position.y && player.name != _leader.name)
+            if (player != null)
             {
-                _leader = player;
-                _leader_num = GetPlayerNumber(player);
-                SetRoles();
-                SetPositions();
-                break;
+                //if overtaking occurs
+                if (player.transform.position.y > _leader.transform.position.y && player.name != _leader.name)
+                {
+                    _leader = player;
+                    _leader_num = GetPlayerNumber(player);
+                    SetRoles();
+                    SetPositions();
+                    ResetCamera();
+                    break;
+                }
             }
         }
 
@@ -68,6 +80,19 @@ public class GameManager : MonoBehaviour
         {
             HealthUpdate();
             _time_since_healthdrain = Time.time;
+        }
+
+        //Camera Management
+        _leader_height = _leader.transform.position.y;
+        _camera_height = _camera.transform.position.y;
+        if (_leader_height > _camera_height + _camera.orthographicSize * 0.5f) //leader should be >= 3/4 of camera height
+            _camera.transform.position = new Vector3(0, _leader_height - _camera.orthographicSize * 0.5f, -10f);
+
+        //Level Management
+        if (_leader_height > _level_manager.GetCurrentLevelHeight() + _total_level_height)
+        {
+            _total_level_height += _level_manager.GetCurrentLevelHeight();
+            _level_manager.UpdateCurrentLevel(_total_level_height);
         }
     }
 
@@ -95,9 +120,9 @@ public class GameManager : MonoBehaviour
         foreach (GameObject player in _players)
         {
             if (player != _leader)
-                player.transform.position = _level_manager.CurrentLevel.Start_Position;
+                player.transform.position = _level_manager.GetStartPosition();
             else
-                player.transform.position = _level_manager.CurrentLevel.Mid_Position;
+                player.transform.position = _level_manager.GetMidPosition();
         }
     }
 
@@ -122,7 +147,7 @@ public class GameManager : MonoBehaviour
     {
         foreach (PlayerComponents player in _player_components)
         {
-            if (player.Number != _leader_num)
+            if (player.Number != _leader_num && player.Health > 0)
                 player.SetHealth(player.Health - HealthTickDamage);
             if (player.Health <= 0)
                 Destroy(player.Reference.gameObject);
@@ -131,6 +156,14 @@ public class GameManager : MonoBehaviour
         //Update Health Canvas (temporary)
         Player1Health.text = "Player1 Health: " + _player_components[1].Health;
         Player2Health.text = "Player2 Health: " + _player_components[0].Health;
+    }
+
+    private void ResetCamera()
+    {
+        //set camera position relative to Start_Position (where Chasers spawn)
+        //offset by half of the size of camera (orthogrraphicSize)
+        //offset by thickness of respawn platform
+        _camera.transform.position = new Vector3(0, _level_manager.GetStartPosition().y + _camera.orthographicSize - 0.7f, -10f);
     }
 }
 
