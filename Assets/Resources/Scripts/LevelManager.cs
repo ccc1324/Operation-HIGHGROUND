@@ -27,11 +27,9 @@ public class LevelManager : MonoBehaviour
         //will only run at start
         if (_current_level_num == -1)
         {
-            _current_level_num = 99;
-            _currentLevel = StartLevel;
-            _current_level_info = _currentLevel.GetComponent<Level>();
-            Instantiate(_currentLevel, new Vector3(0, total_height, 0), new Quaternion(0, 0, 0, 1));
-            return;
+        _currentLevel = StartLevel;
+        _current_level_info = _currentLevel.GetComponent<Level>();
+        Instantiate(_currentLevel, new Vector3(0, total_height, 0), new Quaternion(0, 0, 0, 1));
         }
 
         int nextLevel;
