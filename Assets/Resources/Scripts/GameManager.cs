@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    /* Manages Overtaking, Health, Death, Camera, and level generation
+    /* Manages Overtaking, Health, Death, Camera, "Respawn", and level generation
      * If Overtaking occurs, will set roles and positions of players
      * Will update player's health periodically
      * Death is implemented in the HealthUpdate function
@@ -14,10 +14,14 @@ public class GameManager : MonoBehaviour
     public Text Player1Health; //temporary
     public Text Player2Health; //temporary
 
+    public float OvertakeTime = 1.5f;
+    private float _time_passed = 0;
+
     //health stuff
-    public float HealthTickDelay = 1;
-    public int HealthTickDamage = 1;
-    public int MaxHealth = 20;
+    public float HealthTickDelay = 2;
+    public int HealthTickDamage = 2;
+    public int MaxHealth = 200;
+    public int OffScreenDamage = 20;
     private float _time_since_healthdrain = 0;
 
     private Camera _camera;
@@ -29,7 +33,11 @@ public class GameManager : MonoBehaviour
     private int _leader_num;
     private float _camera_height;
     private float _leader_height;
+
+    //level stuff
+    public float LevelBuffer = 2; //height player needs to jump to get to next level
     private float _total_level_height = 0;
+    private List<Vector3> _respawn_points = new List<Vector3>();
 
 
     void Start()
@@ -53,6 +61,8 @@ public class GameManager : MonoBehaviour
                 player.GetComponent<LeaderMovement>(),
                 player.GetComponent<BasicGun>()));
         }
+        _level_manager.UpdateCurrentLevel(0);
+        _respawn_points.AddRange(_level_manager.GetRespawnPoints());
     }
 
     private void Update()
@@ -67,9 +77,7 @@ public class GameManager : MonoBehaviour
                 {
                     _leader = player;
                     _leader_num = GetPlayerNumber(player);
-                    SetRoles();
-                    SetPositions();
-                    ResetCamera();
+                    SetPositions(player.transform.position);
                     break;
                 }
             }
@@ -85,14 +93,71 @@ public class GameManager : MonoBehaviour
         //Camera Management
         _leader_height = _leader.transform.position.y;
         _camera_height = _camera.transform.position.y;
-        if (_leader_height > _camera_height + _camera.orthographicSize * 0.5f) //leader should be >= 3/4 of camera height
+        if (_leader_height > _camera_height + _camera.orthographicSize * 0.5f) //leader height should be <= 3/4 of camera height
             _camera.transform.position = new Vector3(0, _leader_height - _camera.orthographicSize * 0.5f, -10f);
 
         //Level Management
-        if (_leader_height > _level_manager.GetCurrentLevelHeight() + _total_level_height)
+        if (_leader_height > _level_manager.GetCurrentLevelHeight() + _total_level_height - _camera.orthographicSize / 2)
         {
-            _total_level_height += _level_manager.GetCurrentLevelHeight();
+            _total_level_height += _level_manager.GetCurrentLevelHeight() + LevelBuffer;
             _level_manager.UpdateCurrentLevel(_total_level_height);
+            //add new respawn points
+            foreach (Vector3 respawnpoint in _level_manager.GetRespawnPoints())
+                _respawn_points.Add(new Vector3(respawnpoint.x, respawnpoint.y + _total_level_height, 0));
+        }
+        
+        //Respawn Management (Chasers falling off screen) (want this to be below camera management)
+        foreach (PlayerComponents player in _player_components)
+        {
+            if (player.Reference != null)
+            {
+                if (player.Reference.transform.position.y < _camera_height - _camera.orthographicSize)
+                {
+                    player.SetHealth(player.Health - OffScreenDamage);
+                    player.Reference.transform.position = FindClosetRespawnPoint(_leader_height - _camera.orthographicSize / 2);
+                }
+            }
+        }
+    }
+
+    private void SetPositions(Vector3 leaderPosition)
+    {
+        Vector3 newLeaderPosition = FindClosetRespawnPoint(leaderPosition.y + _camera.orthographicSize);
+        Vector3 newCameraPosition = new Vector3(0, newLeaderPosition.y, -10);
+        Vector3 newChaserPosition = FindClosetRespawnPoint(newLeaderPosition.y - _camera.orthographicSize);
+        foreach (GameObject player in _players)
+        {
+            if (player != _leader)
+            {
+                player.transform.position = newChaserPosition;
+                //eventually add some fancy animation with this
+            }
+        }
+        _time_passed = 0;
+        DisableRoles();
+        StartCoroutine(Lerp(newLeaderPosition, newCameraPosition));
+    }
+
+    private IEnumerator Lerp(Vector3 newLeaderPosition, Vector3 newCameraPosition)
+    {
+        while (_time_passed <= OvertakeTime)
+        {
+            _time_passed += Time.deltaTime;
+            _leader.transform.position = Vector3.Lerp(_leader.transform.position, newLeaderPosition, _time_passed/OvertakeTime);
+            _camera.transform.position = Vector3.Lerp(_camera.transform.position, newCameraPosition, _time_passed / OvertakeTime);
+            yield return null;
+        }
+        SetRoles();
+    }
+
+    private void DisableRoles()
+    {
+        foreach (PlayerComponents player in _player_components)
+        {
+            player.Chaser.enabled = false;
+            player.Leader.enabled = false;
+            player.Gun.enabled = false;
+            player.Invincible = true;
         }
     }
 
@@ -105,41 +170,15 @@ public class GameManager : MonoBehaviour
                 player.Leader.enabled = false;
                 player.Gun.enabled = false;
                 player.Chaser.enabled = true;
+                player.Invincible = false;
             }
             else //set Leader
             {
                 player.Chaser.enabled = false;
                 player.Leader.enabled = true;
                 player.Gun.enabled = true;
+                player.Invincible = false;
             }
-        }
-    }
-
-    private void SetPositions()
-    {
-        foreach (GameObject player in _players)
-        {
-            if (player != _leader)
-                player.transform.position = _level_manager.GetStartPosition();
-            else
-                player.transform.position = _level_manager.GetMidPosition();
-        }
-    }
-
-    private int GetPlayerNumber(GameObject player)
-    {
-        switch (player.name)
-        {
-            case "Player1":
-                return 1;
-            case "Player2":
-                return 2;
-            case "Player3":
-                return 3;
-            case "Player4":
-                return 4;
-            default:
-                return 0;
         }
     }
 
@@ -158,12 +197,31 @@ public class GameManager : MonoBehaviour
         Player2Health.text = "Player2 Health: " + _player_components[0].Health;
     }
 
-    private void ResetCamera()
+    //Helper function that finds closest respawn point to a certain location
+    private Vector3 FindClosetRespawnPoint(float maxHeight)
     {
-        //set camera position relative to Start_Position (where Chasers spawn)
-        //offset by half of the size of camera (orthogrraphicSize)
-        //offset by thickness of respawn platform
-        _camera.transform.position = new Vector3(0, _level_manager.GetStartPosition().y + _camera.orthographicSize - 0.7f, -10f);
+        for (int i = _respawn_points.Count - 1; i >= 0; i--)
+            if (_respawn_points[i].y < maxHeight)
+                return _respawn_points[i];
+        Debug.LogError("No Respawn Points?");
+        return new Vector3();
+    }
+
+    private int GetPlayerNumber(GameObject player)
+    {
+        switch (player.name)
+        {
+            case "Player1":
+                return 1;
+            case "Player2":
+                return 2;
+            case "Player3":
+                return 3;
+            case "Player4":
+                return 4;
+            default:
+                return 0;
+        }
     }
 }
 
@@ -175,6 +233,7 @@ public class PlayerComponents
     public ChaserMovement Chaser;
     public LeaderMovement Leader;
     public BasicGun Gun;
+    public bool Invincible = false;
 
     public PlayerComponents(GameObject r, int n, int h, ChaserMovement c, LeaderMovement l, BasicGun g)
     {
@@ -188,6 +247,7 @@ public class PlayerComponents
 
     public void SetHealth(int h)
     {
+        if (!Invincible)
         Health = h;
     }
 }
