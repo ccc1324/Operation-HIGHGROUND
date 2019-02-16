@@ -14,6 +14,9 @@ public class GameManager : MonoBehaviour
     public Text Player1Health; //temporary
     public Text Player2Health; //temporary
 
+    public float OvertakeTime = 1.5f;
+    private float _time_passed = 0;
+
     //health stuff
     public float HealthTickDelay = 2;
     public int HealthTickDamage = 2;
@@ -30,9 +33,10 @@ public class GameManager : MonoBehaviour
     private int _leader_num;
     private float _camera_height;
     private float _leader_height;
-    private float _total_level_height = 0;
 
+    //level stuff
     public float LevelBuffer = 2; //height player needs to jump to get to next level
+    private float _total_level_height = 0;
     private List<Vector3> _respawn_points = new List<Vector3>();
 
 
@@ -73,9 +77,7 @@ public class GameManager : MonoBehaviour
                 {
                     _leader = player;
                     _leader_num = GetPlayerNumber(player);
-                    SetRoles();
-                    SetPositions();
-                    ResetCamera();
+                    SetPositions(player.transform.position);
                     break;
                 }
             }
@@ -118,6 +120,47 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void SetPositions(Vector3 leaderPosition)
+    {
+        Vector3 newLeaderPosition = FindClosetRespawnPoint(leaderPosition.y + _camera.orthographicSize);
+        Vector3 newCameraPosition = new Vector3(0, newLeaderPosition.y, -10);
+        Vector3 newChaserPosition = FindClosetRespawnPoint(newLeaderPosition.y - _camera.orthographicSize);
+        foreach (GameObject player in _players)
+        {
+            if (player != _leader)
+            {
+                player.transform.position = newChaserPosition;
+                //eventually add some fancy animation with this
+            }
+        }
+        _time_passed = 0;
+        DisableRoles();
+        StartCoroutine(Lerp(newLeaderPosition, newCameraPosition));
+    }
+
+    private IEnumerator Lerp(Vector3 newLeaderPosition, Vector3 newCameraPosition)
+    {
+        while (_time_passed <= OvertakeTime)
+        {
+            _time_passed += Time.deltaTime;
+            _leader.transform.position = Vector3.Lerp(_leader.transform.position, newLeaderPosition, _time_passed/OvertakeTime);
+            _camera.transform.position = Vector3.Lerp(_camera.transform.position, newCameraPosition, _time_passed / OvertakeTime);
+            yield return null;
+        }
+        SetRoles();
+    }
+
+    private void DisableRoles()
+    {
+        foreach (PlayerComponents player in _player_components)
+        {
+            player.Chaser.enabled = false;
+            player.Leader.enabled = false;
+            player.Gun.enabled = false;
+            player.Invincible = true;
+        }
+    }
+
     private void SetRoles()
     {
         foreach (PlayerComponents player in _player_components)
@@ -127,41 +170,15 @@ public class GameManager : MonoBehaviour
                 player.Leader.enabled = false;
                 player.Gun.enabled = false;
                 player.Chaser.enabled = true;
+                player.Invincible = false;
             }
             else //set Leader
             {
                 player.Chaser.enabled = false;
                 player.Leader.enabled = true;
                 player.Gun.enabled = true;
+                player.Invincible = false;
             }
-        }
-    }
-
-    private void SetPositions()
-    {
-        foreach (GameObject player in _players)
-        {
-            if (player != _leader)
-                player.transform.position = _level_manager.GetStartPosition();
-            else
-                player.transform.position = _level_manager.GetMidPosition();
-        }
-    }
-
-    private int GetPlayerNumber(GameObject player)
-    {
-        switch (player.name)
-        {
-            case "Player1":
-                return 1;
-            case "Player2":
-                return 2;
-            case "Player3":
-                return 3;
-            case "Player4":
-                return 4;
-            default:
-                return 0;
         }
     }
 
@@ -180,14 +197,6 @@ public class GameManager : MonoBehaviour
         Player2Health.text = "Player2 Health: " + _player_components[0].Health;
     }
 
-    private void ResetCamera()
-    {
-        //set camera position relative to Start_Position (where Chasers spawn)
-        //offset by half of the size of camera (orthogrraphicSize)
-        //offset by thickness of respawn platform
-        _camera.transform.position = new Vector3(0, _level_manager.GetStartPosition().y + _camera.orthographicSize - 0.7f, -10f);
-    }
-
     //Helper function that finds closest respawn point to a certain location
     private Vector3 FindClosetRespawnPoint(float maxHeight)
     {
@@ -196,6 +205,23 @@ public class GameManager : MonoBehaviour
                 return _respawn_points[i];
         Debug.LogError("No Respawn Points?");
         return new Vector3();
+    }
+
+    private int GetPlayerNumber(GameObject player)
+    {
+        switch (player.name)
+        {
+            case "Player1":
+                return 1;
+            case "Player2":
+                return 2;
+            case "Player3":
+                return 3;
+            case "Player4":
+                return 4;
+            default:
+                return 0;
+        }
     }
 }
 
@@ -207,6 +233,7 @@ public class PlayerComponents
     public ChaserMovement Chaser;
     public LeaderMovement Leader;
     public BasicGun Gun;
+    public bool Invincible = false;
 
     public PlayerComponents(GameObject r, int n, int h, ChaserMovement c, LeaderMovement l, BasicGun g)
     {
@@ -220,6 +247,7 @@ public class PlayerComponents
 
     public void SetHealth(int h)
     {
+        if (!Invincible)
         Health = h;
     }
 }
