@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    /* Manages Overtaking, Health, Death, Camera, and level generation
+    /* Manages Overtaking, Health, Death, Camera, "Respawn", and level generation
      * If Overtaking occurs, will set roles and positions of players
      * Will update player's health periodically
      * Death is implemented in the HealthUpdate function
@@ -15,9 +15,10 @@ public class GameManager : MonoBehaviour
     public Text Player2Health; //temporary
 
     //health stuff
-    public float HealthTickDelay = 1;
-    public int HealthTickDamage = 1;
-    public int MaxHealth = 20;
+    public float HealthTickDelay = 2;
+    public int HealthTickDamage = 2;
+    public int MaxHealth = 200;
+    public int OffScreenDamage = 20;
     private float _time_since_healthdrain = 0;
 
     private Camera _camera;
@@ -30,6 +31,9 @@ public class GameManager : MonoBehaviour
     private float _camera_height;
     private float _leader_height;
     private float _total_level_height = 0;
+
+    public float LevelBuffer = 2; //height player needs to jump to get to next level
+    private List<Vector3> _respawn_points = new List<Vector3>();
 
 
     void Start()
@@ -53,6 +57,8 @@ public class GameManager : MonoBehaviour
                 player.GetComponent<LeaderMovement>(),
                 player.GetComponent<BasicGun>()));
         }
+        _level_manager.UpdateCurrentLevel(0);
+        _respawn_points.AddRange(_level_manager.GetRespawnPoints());
     }
 
     private void Update()
@@ -85,14 +91,30 @@ public class GameManager : MonoBehaviour
         //Camera Management
         _leader_height = _leader.transform.position.y;
         _camera_height = _camera.transform.position.y;
-        if (_leader_height > _camera_height + _camera.orthographicSize * 0.5f) //leader should be >= 3/4 of camera height
+        if (_leader_height > _camera_height + _camera.orthographicSize * 0.5f) //leader height should be <= 3/4 of camera height
             _camera.transform.position = new Vector3(0, _leader_height - _camera.orthographicSize * 0.5f, -10f);
 
         //Level Management
-        if (_leader_height > _level_manager.GetCurrentLevelHeight() + _total_level_height)
+        if (_leader_height > _level_manager.GetCurrentLevelHeight() + _total_level_height - _camera.orthographicSize / 2)
         {
-            _total_level_height += _level_manager.GetCurrentLevelHeight();
+            _total_level_height += _level_manager.GetCurrentLevelHeight() + LevelBuffer;
             _level_manager.UpdateCurrentLevel(_total_level_height);
+            //add new respawn points
+            foreach (Vector3 respawnpoint in _level_manager.GetRespawnPoints())
+                _respawn_points.Add(new Vector3(respawnpoint.x, respawnpoint.y + _total_level_height, 0));
+        }
+        
+        //Respawn Management (Chasers falling off screen) (want this to be below camera management)
+        foreach (PlayerComponents player in _player_components)
+        {
+            if (player.Reference != null)
+            {
+                if (player.Reference.transform.position.y < _camera_height - _camera.orthographicSize)
+                {
+                    player.SetHealth(player.Health - OffScreenDamage);
+                    player.Reference.transform.position = FindClosetRespawnPoint(_leader_height - _camera.orthographicSize / 2);
+                }
+            }
         }
     }
 
@@ -164,6 +186,16 @@ public class GameManager : MonoBehaviour
         //offset by half of the size of camera (orthogrraphicSize)
         //offset by thickness of respawn platform
         _camera.transform.position = new Vector3(0, _level_manager.GetStartPosition().y + _camera.orthographicSize - 0.7f, -10f);
+    }
+
+    //Helper function that finds closest respawn point to a certain location
+    private Vector3 FindClosetRespawnPoint(float maxHeight)
+    {
+        for (int i = _respawn_points.Count - 1; i >= 0; i--)
+            if (_respawn_points[i].y < maxHeight)
+                return _respawn_points[i];
+        Debug.LogError("No Respawn Points?");
+        return new Vector3();
     }
 }
 

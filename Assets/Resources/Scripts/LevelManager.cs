@@ -4,24 +4,19 @@ using UnityEngine;
 
 public class LevelManager : MonoBehaviour
 {
-    public float LevelBuffer = 2; //height player needs to jump to get to next level
+    public GameObject[] _levels; //load all levels here
 
-
-    public GameObject[] _levels;
+    private GameManager _game_manager;
     private GameObject _oldLevel;
     private GameObject _currentLevel;
     private Level _current_level_info;
     private System.Random _rng = new System.Random();
-    private int _current_level_num;
+    private int _current_level_num = -1; //used for randomization of levels
 
 
     private void Start()
     {
-        //_levels = Resources.LoadAll("Levels/BasicLevel") as GameObject[];
-        _current_level_num = _rng.Next(0, _levels.Length);
-        _currentLevel = _levels[_current_level_num];
-        _current_level_info = _currentLevel.GetComponent<Level>();
-        Instantiate(_currentLevel, new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 1));
+
     }
 
     //Called by GameManager when leader reaches end of current level
@@ -40,7 +35,7 @@ public class LevelManager : MonoBehaviour
         _current_level_num = nextLevel;
         _currentLevel = _levels[nextLevel];
         _current_level_info = _currentLevel.GetComponent<Level>();
-        Instantiate(_currentLevel, new Vector3(0, total_height + LevelBuffer, 0), new Quaternion(0, 0, 0, 1));
+        Instantiate(_currentLevel, new Vector3(0, total_height, 0), new Quaternion(0, 0, 0, 1));
     }
 
     //returns height of current level = End - Start heights
@@ -59,5 +54,11 @@ public class LevelManager : MonoBehaviour
     public Vector3 GetMidPosition()
     {
         return _current_level_info.Mid_Position;
+    }
+
+    //return respawn points of current level
+    public List<Vector3> GetRespawnPoints()
+    {
+        return _current_level_info.Respawnpoints;
     }
 }
