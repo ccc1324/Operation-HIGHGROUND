@@ -59,7 +59,8 @@ public class LeaderMovement : MonoBehaviour
         if (_jumps > 0)
         {
             _rigidbody.AddForce(new Vector2(0, Jump_Force));
-            _jumps--;
+			if (_jumps == 1)
+				_jumps--;
         }
     }
 
@@ -69,8 +70,12 @@ public class LeaderMovement : MonoBehaviour
                 _jumps = 1;                     
     }
 
+	private void OnCollisionExit2D(Collision2D collision)
+	{
+		_jumps--;
+	}
 
-    private int PlayerController()
+	private int PlayerController()
     {
         string name = gameObject.name;
         switch (name)

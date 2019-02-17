@@ -25,8 +25,10 @@ public class BasicGun : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetAxis("Fire_p" + _player) > 0 || Input.GetButton("Fire_p" + _player))
-        {
+        //if (Input.GetAxis("Fire_p" + _player) > 0 || Input.GetButton("Fire_p" + _player))
+		if(Input.GetAxisRaw("AimX_p" + _player) != 0 || Input.GetAxisRaw("AimY_p" + _player) != 0)
+
+		{
             if (Time.time - _time_last_shot > ReloadTime)
             {
                 Shoot();

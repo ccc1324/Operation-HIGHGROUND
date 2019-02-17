@@ -377,6 +377,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Move_Speed: 700
   Jump_Force: 1500
+  iFrames: 2
 --- !u!1001 &414998871
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1155,7 +1156,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bb71757d74d7624f9e102f6cb6d2318, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ReloadTime: 0.2
+  ReloadTime: 0.5
   BulletPrefab: {fileID: 0}
 --- !u!50 &1653978204
 Rigidbody2D:
@@ -1279,7 +1280,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Move_Speed: 700
-  Jump_Force: 1500
+  Jump_Force: 35
+  iFrames: 2
 --- !u!114 &1653978209
 MonoBehaviour:
   m_ObjectHideFlags: 0

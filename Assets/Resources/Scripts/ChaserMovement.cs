@@ -16,15 +16,28 @@ public class ChaserMovement : MonoBehaviour
     private int _player;
     private Rigidbody2D _rigidbody;
 
-    private int _jumps;
+	//Color stuff
+	private SpriteRenderer _playerSprite;
+	private Color _normColor;
+	private Color _stunColor;
+	private bool _invincible = false;
+	public int iFrames = 2;
+
+	private int _jumps;
     private bool _stunned = false;
+	private bool _isOnWall = false;
 
     void Start()
     {
         _player = PlayerController();
         _rigidbody = GetComponent<Rigidbody2D>();
         _jumps = 0;
-    }
+
+		//More color stuff
+		_playerSprite = GetComponent<SpriteRenderer>();
+		_normColor = _playerSprite.color;
+		_stunColor = new Color(_normColor.r, _normColor.g, _normColor.b, 0.2f);
+	}
 
     private void Update()
     {
@@ -60,33 +73,69 @@ public class ChaserMovement : MonoBehaviour
     {
         if (_jumps > 0)
         {
-            _rigidbody.AddForce(new Vector2(0, Jump_Force));
-            _jumps--;
+			if (_isOnWall)
+				_rigidbody.velocity = new Vector2(Jump_Force, Jump_Force);
+			else
+			{
+				_rigidbody.velocity = (new Vector2(0, Jump_Force));
+				if (_jumps == 1)
+					_jumps--;
+			}
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.GetComponent<Platform>() != null)
-            _jumps = 2;        
-    }
+	private void OnCollisionEnter2D(Collision2D collision)
+	{
+		GameObject collidedWith = collision.gameObject;
 
-    public void Stun(float stunDuration)
+		if (collidedWith.GetComponent<Platform>() != null)
+		{
+			Vector3 platformPosition = collidedWith.GetComponent<Transform>().position;
+			Vector2 platformSize = collidedWith.GetComponent<BoxCollider2D>().size;
+
+			//Debug.Log("platpos" + platformPosition.y);
+			//Debug.Log("platsize" + platformSize);
+			if (platformPosition.y + platformSize.y < _rigidbody.position.y && platformPosition.y - platformSize.y > _rigidbody.position.y)
+			{
+				Debug.Log("flag1");
+				_isOnWall = true;
+			}
+			else _jumps = 2;
+		}
+	}
+
+	private void OnCollisionExit2D(Collision2D collision)
+	{
+		if (collision.gameObject.GetComponent<Platform>() != null)
+			_jumps--;
+	}
+
+	public void Stun(float stunDuration)
     {
-        if (!_stunned) //don't want people to be perma-stunned, and also makes it so that ParalyzeHeal won't be called randomly
-        {
-            _stunned = true;
-            Invoke("ParalyzeHeal", stunDuration);
-        }
+		if (!_stunned && !_invincible) //don't want people to be perma-stunned, and also makes it so that ParalyzeHeal won't be called randomly
+		{
+			Debug.Log("stunned");
+			_stunned = true;
+			_playerSprite.color = _stunColor;
+			Invoke("ParalyzeHeal", stunDuration);
+		}
     }
 
     public void ParalyzeHeal()
     {
-        _stunned = false;
-    }
+		_stunned = false;
+		_invincible = true;
+		_playerSprite.color = Color.gray;
+	}
+
+	private void endIFrames()
+	{
+		_invincible = false;
+		_playerSprite.color = _normColor;
+	}
 
 
-    private int PlayerController()
+	private int PlayerController()
     {
         string name = gameObject.name;
         switch (name)
