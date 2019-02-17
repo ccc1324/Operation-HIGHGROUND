@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     public Text Player1Health; //temporary
     public Text Player2Health; //temporary
 
-    public float OvertakeTime = 1.5f;
+    public float OvertakeTime = 1f;
     private float _time_passed = 0;
 
     //health stuff
@@ -122,6 +122,8 @@ public class GameManager : MonoBehaviour
 
     private void SetPositions(Vector3 leaderPosition)
     {
+        Vector3 oldLeaderPosition = leaderPosition;
+        Vector3 oldCameraPosition = _camera.transform.position;
         Vector3 newLeaderPosition = FindClosetRespawnPoint(leaderPosition.y + _camera.orthographicSize);
         Vector3 newCameraPosition = new Vector3(0, newLeaderPosition.y, -10);
         Vector3 newChaserPosition = FindClosetRespawnPoint(newLeaderPosition.y - _camera.orthographicSize);
@@ -135,19 +137,21 @@ public class GameManager : MonoBehaviour
         }
         _time_passed = 0;
         DisableRoles();
-        StartCoroutine(Lerp(newLeaderPosition, newCameraPosition));
+        StartCoroutine(Lerp(oldLeaderPosition, newLeaderPosition, oldCameraPosition, newCameraPosition));
+        _leader.GetComponent<Rigidbody2D>().simulated = false;
     }
 
-    private IEnumerator Lerp(Vector3 newLeaderPosition, Vector3 newCameraPosition)
+    private IEnumerator Lerp(Vector3 oldLeaderPosition, Vector3 newLeaderPosition, Vector3 oldCameraPosition, Vector3 newCameraPosition)
     {
         while (_time_passed <= OvertakeTime)
         {
             _time_passed += Time.deltaTime;
-            _leader.transform.position = Vector3.Lerp(_leader.transform.position, newLeaderPosition, _time_passed/OvertakeTime);
-            _camera.transform.position = Vector3.Lerp(_camera.transform.position, newCameraPosition, _time_passed / OvertakeTime);
+            _leader.transform.position = Vector3.Lerp(oldLeaderPosition, newLeaderPosition, _time_passed/OvertakeTime);
+            _camera.transform.position = Vector3.Lerp(oldCameraPosition, newCameraPosition, _time_passed / OvertakeTime);
             yield return null;
         }
         SetRoles();
+        _leader.GetComponent<Rigidbody2D>().simulated = true;
     }
 
     private void DisableRoles()

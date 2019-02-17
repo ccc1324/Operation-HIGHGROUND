@@ -5187,10 +5187,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Start_Position: {x: 0, y: 0.8, z: 0}
-  Mid_Position: {x: 0, y: 20, z: 0}
   End_Position: {x: 0, y: 42.75, z: 0}
   Respawnpoints:
-  - {x: -1, y: 8.8, z: 0}
-  - {x: -1, y: 20.1, z: 0}
-  - {x: -1, y: 28.1, z: 0}
-  - {x: -1, y: 39.6, z: 0}
+  - {x: -1, y: 9, z: 0}
+  - {x: -1, y: 20.5, z: 0}
+  - {x: -1, y: 28.5, z: 0}
+  - {x: -1, y: 40, z: 0}
