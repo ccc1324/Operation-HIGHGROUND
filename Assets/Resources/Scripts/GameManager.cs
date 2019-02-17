@@ -14,8 +14,8 @@ public class GameManager : MonoBehaviour
     public Text Player1Health; //temporary
     public Text Player2Health; //temporary
 
-    public float OvertakeTime = 1f;
-    private float _time_passed = 0;
+    public float OvertakeTime = 0.5f;
+    private float _time = 0;
 
     //health stuff
     public float HealthTickDelay = 2;
@@ -35,7 +35,7 @@ public class GameManager : MonoBehaviour
     private float _leader_height;
 
     //level stuff
-    public float LevelBuffer = 2; //height player needs to jump to get to next level
+    public float LevelBuffer = 0; //height player needs to jump to get to next level
     private float _total_level_height = 0;
     private List<Vector3> _respawn_points = new List<Vector3>();
 
@@ -51,15 +51,12 @@ public class GameManager : MonoBehaviour
         _leader_num = 0;
         //the point of player_components is we don't want to be calling GetComponent every Update cycle
         //apparently it can make the game laggy, so we want to "stash" those components
+        int i = -1;
         foreach (GameObject player in _players)
         {
-            _player_components.Add(new PlayerComponents(
-                player,
-                GetPlayerNumber(player),
-                MaxHealth,
-                player.GetComponent<ChaserMovement>(),
-                player.GetComponent<LeaderMovement>(),
-                player.GetComponent<BasicGun>()));
+            _player_components.Add(new PlayerComponents(player, GetPlayerNumber(player), MaxHealth));
+            player.transform.position = new Vector3(i, 3, 0);
+            i++;
         }
         _level_manager.UpdateCurrentLevel(0);
         _respawn_points.AddRange(_level_manager.GetRespawnPoints());
@@ -97,7 +94,7 @@ public class GameManager : MonoBehaviour
             _camera.transform.position = new Vector3(0, _leader_height - _camera.orthographicSize * 0.5f, -10f);
 
         //Level Management
-        if (_leader_height > _level_manager.GetCurrentLevelHeight() + _total_level_height - _camera.orthographicSize / 2)
+        if (_leader_height > _level_manager.GetCurrentLevelHeight() + _total_level_height - _camera.orthographicSize / 1.5)
         {
             _total_level_height += _level_manager.GetCurrentLevelHeight() + LevelBuffer;
             _level_manager.UpdateCurrentLevel(_total_level_height);
@@ -113,6 +110,7 @@ public class GameManager : MonoBehaviour
             {
                 if (player.Reference.transform.position.y < _camera_height - _camera.orthographicSize)
                 {
+                    player.Rb.velocity = new Vector3(0, 0, 0);
                     player.SetHealth(player.Health - OffScreenDamage);
                     player.Reference.transform.position = FindClosetRespawnPoint(_leader_height - _camera.orthographicSize / 2);
                 }
@@ -124,32 +122,37 @@ public class GameManager : MonoBehaviour
     {
         Vector3 oldLeaderPosition = leaderPosition;
         Vector3 oldCameraPosition = _camera.transform.position;
-        Vector3 newLeaderPosition = FindClosetRespawnPoint(leaderPosition.y + _camera.orthographicSize);
-        Vector3 newCameraPosition = new Vector3(0, newLeaderPosition.y, -10);
-        Vector3 newChaserPosition = FindClosetRespawnPoint(newLeaderPosition.y - _camera.orthographicSize);
+        Vector3 newLeaderPosition = FindClosetRespawnPoint(leaderPosition.y + _camera.orthographicSize / 2);
+        Vector3 newCameraPosition = new Vector3(0, newLeaderPosition.y - _camera.orthographicSize / 3, -10);
+        Vector3 newChaserPosition = FindClosetRespawnPoint(newLeaderPosition.y - _camera.orthographicSize / 2);
         foreach (GameObject player in _players)
         {
             if (player != _leader)
             {
+                player.GetComponent<Rigidbody2D>().velocity = new Vector3(0, 0, 0);
                 player.transform.position = newChaserPosition;
                 //eventually add some fancy animation with this
             }
         }
-        _time_passed = 0;
+        _time = Time.time;
         DisableRoles();
-        StartCoroutine(Lerp(oldLeaderPosition, newLeaderPosition, oldCameraPosition, newCameraPosition));
+        _leader.GetComponent<Rigidbody2D>().velocity = new Vector3(0, 0, 0);
         _leader.GetComponent<Rigidbody2D>().simulated = false;
+        StartCoroutine(Lerp(oldLeaderPosition, newLeaderPosition, oldCameraPosition, newCameraPosition));
     }
 
     private IEnumerator Lerp(Vector3 oldLeaderPosition, Vector3 newLeaderPosition, Vector3 oldCameraPosition, Vector3 newCameraPosition)
     {
-        while (_time_passed <= OvertakeTime)
+        float time = 0;
+        while (time <= OvertakeTime)
         {
-            _time_passed += Time.deltaTime;
-            _leader.transform.position = Vector3.Lerp(oldLeaderPosition, newLeaderPosition, _time_passed/OvertakeTime);
-            _camera.transform.position = Vector3.Lerp(oldCameraPosition, newCameraPosition, _time_passed / OvertakeTime);
+            time = Mathf.Abs(Time.time - _time);
+            _leader.transform.position = Vector3.Lerp(oldLeaderPosition, newLeaderPosition, time / OvertakeTime);
+            _camera.transform.position = Vector3.Lerp(oldCameraPosition, newCameraPosition, time / OvertakeTime);
             yield return null;
         }
+        _leader.transform.position = newLeaderPosition;
+        _camera.transform.position = newCameraPosition;
         SetRoles();
         _leader.GetComponent<Rigidbody2D>().simulated = true;
     }
@@ -232,6 +235,7 @@ public class GameManager : MonoBehaviour
 public class PlayerComponents
 {
     public GameObject Reference; //reference to original player object
+    public Rigidbody2D Rb;
     public int Number;
     public int Health;
     public ChaserMovement Chaser;
@@ -239,14 +243,15 @@ public class PlayerComponents
     public BasicGun Gun;
     public bool Invincible = false;
 
-    public PlayerComponents(GameObject r, int n, int h, ChaserMovement c, LeaderMovement l, BasicGun g)
+    public PlayerComponents(GameObject r, int n, int h)
     {
         Reference = r;
+        Rb = r.GetComponent<Rigidbody2D>();
         Number = n;
         Health = h;
-        Chaser = c;
-        Leader = l;
-        Gun = g;
+        Chaser = r.GetComponent<ChaserMovement>();
+        Leader = r.GetComponent<LeaderMovement>();
+        Gun = r.GetComponent<BasicGun>();
     }
 
     public void SetHealth(int h)
