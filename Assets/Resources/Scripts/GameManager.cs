@@ -200,8 +200,8 @@ public class GameManager : MonoBehaviour
         }
 
         //Update Health Canvas (temporary)
-        Player1Health.text = "Player1 Health: " + _player_components[1].Health;
-        Player2Health.text = "Player2 Health: " + _player_components[0].Health;
+        Player1Health.text = "Player1 Health: " + _player_components[0].Health;
+        Player2Health.text = "Player2 Health: " + _player_components[1].Health;
     }
 
     //Helper function that finds closest respawn point to a certain location
