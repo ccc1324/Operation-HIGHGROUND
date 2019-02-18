@@ -146,7 +146,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 78.42, y: -103.64}
+  m_AnchoredPosition: {x: 78.41998, y: -103.64}
   m_SizeDelta: {x: 140.74, y: 197.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &328211312
@@ -347,7 +347,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bb71757d74d7624f9e102f6cb6d2318, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ReloadTime: 0.2
+  ReloadTime: 1.5
   BulletPrefab: {fileID: 0}
 --- !u!114 &378489809
 MonoBehaviour:
@@ -377,6 +377,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Move_Speed: 700
   Jump_Force: 1500
+  iFrames: 2
 --- !u!1001 &414998871
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -990,7 +991,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -83.41, y: -102.57}
+  m_AnchoredPosition: {x: -83.41, y: -102.57001}
   m_SizeDelta: {x: 148.5, y: 192.05}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1362874329
@@ -1248,7 +1249,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bb71757d74d7624f9e102f6cb6d2318, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ReloadTime: 0.2
+  ReloadTime: 1.5
   BulletPrefab: {fileID: 0}
 --- !u!50 &1653978204
 Rigidbody2D:
@@ -1373,6 +1374,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Move_Speed: 700
   Jump_Force: 1500
+  iFrames: 2
 --- !u!114 &1653978209
 MonoBehaviour:
   m_ObjectHideFlags: 0

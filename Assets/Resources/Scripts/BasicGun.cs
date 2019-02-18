@@ -48,8 +48,12 @@ public class BasicGun : MonoBehaviour
         float yaxis = Input.GetAxisRaw("AimY_p" + _player);
         float angle = Mathf.Atan2(yaxis, xaxis) * 360 / (2 * Mathf.PI);
 
-        Quaternion rotation = Quaternion.Euler(0, 0, angle);
-        GameObject bullet = Instantiate(BulletPrefab, _holder.position, rotation, _holder);
+        Quaternion rotationa = Quaternion.Euler(0, 0, angle - 20);
+        Quaternion rotationb = Quaternion.Euler(0, 0, angle);
+        Quaternion rotationc = Quaternion.Euler(0, 0, angle + 20);
+        GameObject bulleta = Instantiate(BulletPrefab, _holder.position, rotationa, _holder);
+        GameObject bulletb = Instantiate(BulletPrefab, _holder.position, rotationb, _holder);
+        GameObject bulletc = Instantiate(BulletPrefab, _holder.position, rotationc, _holder);
     }
 
     private int PlayerController()
