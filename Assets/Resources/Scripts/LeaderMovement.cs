@@ -15,6 +15,7 @@ public class LeaderMovement : MonoBehaviour
     private Rigidbody2D _rigidbody;
 
     private int _jumps;
+	private int _wallJumpModifier;
     
 
     void Start()
@@ -55,8 +56,10 @@ public class LeaderMovement : MonoBehaviour
     }
 
     private void Jump()
-    {       
-        if (_jumps > 0)
+    {
+		if (_wallJumpModifier != 0)
+			_rigidbody.AddForce(new Vector2(Jump_Force * _wallJumpModifier, Jump_Force));
+		else if (_jumps > 0)
         {
             _rigidbody.AddForce(new Vector2(0, Jump_Force));
 			if (_jumps == 1)
@@ -64,15 +67,28 @@ public class LeaderMovement : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnCollisionStay2D(Collision2D collision)
     {
-        if (collision.gameObject.GetComponent<Platform>() != null)
-                _jumps = 1;                     
-    }
+		GameObject collidedWith = collision.gameObject;
+
+		if (collidedWith.GetComponent<Platform>() != null)
+		{
+			if (collision.GetContact(0).normal == new Vector2(-1, 0))
+			{
+				_wallJumpModifier = -1;
+			}
+			else if (collision.GetContact(0).normal == new Vector2(1, 0))
+			{
+				_wallJumpModifier = 1;
+			}
+
+			else _jumps = 1;
+		}
+	}
 
 	private void OnCollisionExit2D(Collision2D collision)
 	{
-		_jumps--;
+		_jumps = 0;
 	}
 
 	private int PlayerController()
