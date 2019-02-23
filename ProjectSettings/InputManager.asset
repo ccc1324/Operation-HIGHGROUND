@@ -44,7 +44,7 @@ InputManager:
     negativeButton: 
     positiveButton: joystick 1 button 1
     altNegativeButton: 
-    altPositiveButton: joystick 1 button 5
+    altPositiveButton: joystick 1 button 4
     gravity: 1
     dead: 0.001
     sensitivity: 1
@@ -54,20 +54,20 @@ InputManager:
     axis: 0
     joyNum: 1
   - serializedVersion: 3
-    m_Name: JumpC_p1
+    m_Name: Empty
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
     positiveButton: 
     altNegativeButton: 
     altPositiveButton: 
-    gravity: 100
+    gravity: 1
     dead: 0.1
-    sensitivity: 20
-    snap: 0
+    sensitivity: 1
+    snap: 1
     invert: 0
-    type: 2
-    axis: 9
+    type: 0
+    axis: 0
     joyNum: 1
   - serializedVersion: 3
     m_Name: AimX_p1
@@ -172,7 +172,7 @@ InputManager:
     negativeButton: 
     positiveButton: joystick 2 button 1
     altNegativeButton: 
-    altPositiveButton: joystick 2 button 5
+    altPositiveButton: joystick 2 button 4
     gravity: 1
     dead: 0.001
     sensitivity: 1
@@ -182,17 +182,17 @@ InputManager:
     axis: 0
     joyNum: 2
   - serializedVersion: 3
-    m_Name: JumpC_p2
+    m_Name: Empty
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
     positiveButton: left alt
     altNegativeButton: 
     altPositiveButton: mouse 1
-    gravity: 100
+    gravity: 1
     dead: 0.1
-    sensitivity: 20
-    snap: 0
+    sensitivity: 1
+    snap: 1
     invert: 0
     type: 2
     axis: 9

@@ -11,9 +11,8 @@ public class ChaserMovement : MonoBehaviour
      * Can jump in midair
      */
 
-    public float Move_Speed = 700f;
-    public float Jump_Force = 35f;
-    public float WallJumpForce = 6000f;
+    public float Move_Speed;
+    public float Jump_Force;
     private int _player;
     private Rigidbody2D _rigidbody;
     private Vector2 _emptyVector = Vector3.zero;
@@ -29,6 +28,8 @@ public class ChaserMovement : MonoBehaviour
     private bool _touchingWallLeft = false;
     private bool _touchingWallRight = false;
     private bool _normalJump = false;
+    private bool _wallJump = false;
+    private int _wallJumpCounter = -1;
     private bool _airJump = false;
     private bool _stunned = false;
 
@@ -46,19 +47,29 @@ public class ChaserMovement : MonoBehaviour
     private void Update()
     {
         Vector2 position = new Vector2(transform.position.x, transform.position.y);
-        LayerMask mask = LayerMask.GetMask("Default");
-        RaycastHit2D hit = Physics2D.Raycast(position, Vector2.down, 2f, 1);
-        _grounded = Physics2D.Raycast(position, Vector2.down, 0.6f, 1) ? true : false;
+        _grounded = Physics2D.BoxCast(position, new Vector2(1, 1), 0, Vector2.down, 0.05f, 1) ? true : false;
+        _touchingWallLeft = Physics2D.BoxCast(position, new Vector2(1, 1), 0, Vector2.left, 0.1f, 1) ? true : false;
+        _touchingWallRight = Physics2D.BoxCast(position, new Vector2(1, 1), 0, Vector2.right, 0.1f, 1) ? true : false;
+
         if (_grounded)
         {
             _normalJump = true;
             _airJump = true;
+            _wallJump = true;
         }
-        _touchingWallLeft = Physics2D.Raycast(position, Vector2.left, 0.6f, 1) ? true : false;
-        _touchingWallRight = Physics2D.Raycast(position, Vector2.right, 0.6f, 1) ? true : false;
-        if ((Input.GetButtonDown("JumpA_p" + _player) 
-            || Input.GetButtonDown("JumpB_p" + _player) 
-            || Input.GetAxis("JumpC_p" + _player) > 0.3) && !_stunned)
+        if (_touchingWallLeft)
+        {
+            if (_wallJumpCounter == 1 || _wallJumpCounter == -1)
+                _wallJump = true;
+            _wallJumpCounter = 0;
+        }
+        if (_touchingWallRight)
+        {
+            if (_wallJumpCounter == 0 || _wallJumpCounter == -1)
+                _wallJump = true;
+            _wallJumpCounter = 1;
+        }
+        if (Input.GetButtonDown("JumpA_p" + _player) || Input.GetButtonDown("JumpB_p" + _player) && !_stunned)
             Jump();          
     }
 
@@ -81,7 +92,7 @@ public class ChaserMovement : MonoBehaviour
 
     private void StopMoving()
     {
-        //_rigidbody.velocity = new Vector2(0, _rigidbody.velocity.y);
+        _rigidbody.velocity = new Vector2(0, _rigidbody.velocity.y);
     }
 
     private void Jump()
@@ -92,16 +103,16 @@ public class ChaserMovement : MonoBehaviour
             _normalJump = false;
             return;
         }
-        if (_touchingWallLeft)
+        if (_touchingWallLeft && _wallJump)
         {
-            _rigidbody.AddForce(new Vector2(WallJumpForce, 0));
-            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force / 1.6f);
+            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
+            _wallJump = false;
             return;
         }
-        if (_touchingWallRight)
+        if (_touchingWallRight && _wallJump)
         {
-            _rigidbody.AddForce(new Vector2(-WallJumpForce, 0));
-            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force / 1.6f);
+            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
+            _wallJump = false;
             return;
         }
         if (_airJump)
