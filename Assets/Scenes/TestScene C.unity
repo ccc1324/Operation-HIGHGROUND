@@ -376,8 +376,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Move_Speed: 700
-  Jump_Force: 1500
-  iFrames: 2
+  Jump_Force: 35
+  iFrameTime: 2
 --- !u!1001 &414998871
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1281,7 +1281,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Move_Speed: 700
   Jump_Force: 35
-  iFrames: 2
+  iFrameTime: 2
 --- !u!114 &1653978209
 MonoBehaviour:
   m_ObjectHideFlags: 0

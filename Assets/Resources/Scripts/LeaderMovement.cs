@@ -10,27 +10,35 @@ public class LeaderMovement : MonoBehaviour
      * 
      */
     public float Move_Speed = 700f;
-    public float Jump_Force = 1500f;
+    public float Jump_Force = 35f;
+    public float WallJumpForce = 6000f;
     private int _player;
     private Rigidbody2D _rigidbody;
 
-    private int _jumps;
-	private int _wallJumpModifier;
-    
+    private bool _grounded = false;
+    private bool _touchingWallLeft = false;
+    private bool _touchingWallRight = false;
+    private bool _normalJump = false;
+
 
     void Start()
     {
         _player = PlayerController();
         _rigidbody = GetComponent<Rigidbody2D>();
-        _jumps = 0;
     }
 
     private void Update()
     {
-        if (Input.GetButtonDown("JumpA_p" + _player) || Input.GetButtonDown("JumpB_p" + _player))
-        {
+        Vector2 position = new Vector2(transform.position.x, transform.position.y);
+        _grounded = Physics2D.Raycast(position, Vector2.down, 0.6f, 1) ? true : false;
+        if (_grounded)
+            _normalJump = true;
+        _touchingWallLeft = Physics2D.Raycast(position, Vector2.left, 0.6f, 1) ? true : false;
+        _touchingWallRight = Physics2D.Raycast(position, Vector2.right, 0.6f, 1) ? true : false;
+        if ((Input.GetButtonDown("JumpA_p" + _player)
+            || Input.GetButtonDown("JumpB_p" + _player)
+            || Input.GetAxis("JumpC_p" + _player) > 0.3))
             Jump();
-        }
     }
 
     private void FixedUpdate()
@@ -52,46 +60,32 @@ public class LeaderMovement : MonoBehaviour
 
     private void StopMoving()
     {
-        _rigidbody.velocity = new Vector2(0, _rigidbody.velocity.y);
+        //_rigidbody.velocity = new Vector2(0, _rigidbody.velocity.y);
     }
 
     private void Jump()
     {
-		if (_wallJumpModifier != 0)
-			_rigidbody.AddForce(new Vector2(Jump_Force * _wallJumpModifier, Jump_Force));
-		else if (_jumps > 0)
+        if (_normalJump)
         {
-            _rigidbody.AddForce(new Vector2(0, Jump_Force));
-			if (_jumps == 1)
-				_jumps--;
+            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
+            _normalJump = false;
+            return;
+        }
+        if (_touchingWallLeft)
+        {
+            _rigidbody.AddForce(new Vector2(WallJumpForce, 0));
+            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force / 1.6f);
+            return;
+        }
+        if (_touchingWallRight)
+        {
+            _rigidbody.AddForce(new Vector2(-WallJumpForce, 0));
+            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force / 1.6f);
+            return;
         }
     }
 
-    private void OnCollisionStay2D(Collision2D collision)
-    {
-		GameObject collidedWith = collision.gameObject;
-
-		if (collidedWith.GetComponent<Platform>() != null)
-		{
-			if (collision.GetContact(0).normal == new Vector2(-1, 0))
-			{
-				_wallJumpModifier = -1;
-			}
-			else if (collision.GetContact(0).normal == new Vector2(1, 0))
-			{
-				_wallJumpModifier = 1;
-			}
-
-			else _jumps = 1;
-		}
-	}
-
-	private void OnCollisionExit2D(Collision2D collision)
-	{
-		_jumps = 0;
-	}
-
-	private int PlayerController()
+    private int PlayerController()
     {
         string name = gameObject.name;
         switch (name)

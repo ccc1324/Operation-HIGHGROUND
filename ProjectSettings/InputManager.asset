@@ -54,16 +54,16 @@ InputManager:
     axis: 0
     joyNum: 1
   - serializedVersion: 3
-    m_Name: Fire_p1
+    m_Name: JumpC_p1
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: left alt
+    positiveButton: 
     altNegativeButton: 
-    altPositiveButton: mouse 1
-    gravity: 0
-    dead: 0.001
-    sensitivity: 1
+    altPositiveButton: 
+    gravity: 100
+    dead: 0.1
+    sensitivity: 20
     snap: 0
     invert: 0
     type: 2
@@ -78,7 +78,7 @@ InputManager:
     altNegativeButton: 
     altPositiveButton: mouse 1
     gravity: 0
-    dead: 0.1
+    dead: 0.2
     sensitivity: 1
     snap: 0
     invert: 0
@@ -94,7 +94,7 @@ InputManager:
     altNegativeButton: 
     altPositiveButton: mouse 1
     gravity: 0
-    dead: 0.1
+    dead: 0.2
     sensitivity: 1
     snap: 0
     invert: 0
@@ -110,7 +110,7 @@ InputManager:
     altNegativeButton: 
     altPositiveButton: mouse 1
     gravity: 0
-    dead: 0.1
+    dead: 0.2
     sensitivity: 1
     snap: 0
     invert: 1
@@ -126,7 +126,7 @@ InputManager:
     altNegativeButton: 
     altPositiveButton: mouse 1
     gravity: 0
-    dead: 0.1
+    dead: 0.2
     sensitivity: 1
     snap: 0
     invert: 1
@@ -182,82 +182,18 @@ InputManager:
     axis: 0
     joyNum: 2
   - serializedVersion: 3
-    m_Name: Fire_p2
+    m_Name: JumpC_p2
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
     positiveButton: left alt
     altNegativeButton: 
     altPositiveButton: mouse 1
-    gravity: 1000
-    dead: 0.001
-    sensitivity: 1
+    gravity: 100
+    dead: 0.1
+    sensitivity: 20
     snap: 0
     invert: 0
     type: 2
     axis: 9
-    joyNum: 2
-  - serializedVersion: 3
-    m_Name: Fire_p1
-    descriptiveName: Alternative Fire
-    descriptiveNegativeName: 
-    negativeButton: 
-    positiveButton: joystick 1 button 4
-    altNegativeButton: 
-    altPositiveButton: mouse 1
-    gravity: 1000
-    dead: 0.001
-    sensitivity: 1
-    snap: 0
-    invert: 0
-    type: 0
-    axis: 0
-    joyNum: 1
-  - serializedVersion: 3
-    m_Name: Fire_p2
-    descriptiveName: Alternative Fire
-    descriptiveNegativeName: 
-    negativeButton: 
-    positiveButton: joystick 2 button 4
-    altNegativeButton: 
-    altPositiveButton: mouse 1
-    gravity: 1000
-    dead: 0.001
-    sensitivity: 1
-    snap: 0
-    invert: 0
-    type: 0
-    axis: 0
-    joyNum: 2
-  - serializedVersion: 3
-    m_Name: Fire_p1
-    descriptiveName: Alternative Fire (axis)
-    descriptiveNegativeName: 
-    negativeButton: 
-    positiveButton: 
-    altNegativeButton: 
-    altPositiveButton: 
-    gravity: 1000
-    dead: 0.001
-    sensitivity: 1
-    snap: 0
-    invert: 0
-    type: 2
-    axis: 8
-    joyNum: 1
-  - serializedVersion: 3
-    m_Name: Fire_p2
-    descriptiveName: Alternative Fire (axis)
-    descriptiveNegativeName: 
-    negativeButton: 
-    positiveButton: 
-    altNegativeButton: 
-    altPositiveButton: 
-    gravity: 1000
-    dead: 0.001
-    sensitivity: 1
-    snap: 0
-    invert: 0
-    type: 2
-    axis: 8
     joyNum: 2

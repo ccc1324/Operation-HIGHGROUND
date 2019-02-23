@@ -12,28 +12,30 @@ public class ChaserMovement : MonoBehaviour
      */
 
     public float Move_Speed = 700f;
-    public float Jump_Force = 1500f;
+    public float Jump_Force = 35f;
+    public float WallJumpForce = 6000f;
     private int _player;
     private Rigidbody2D _rigidbody;
-	private Collider2D _collider;
+    private Vector2 _emptyVector = Vector3.zero;
 
-	//Color stuff
-	private SpriteRenderer _playerSprite;
+    //Color stuff
+    private SpriteRenderer _playerSprite;
 	private Color _normColor;
 	private Color _stunColor;
-	private bool _invincible = false;
-	public int iFrames = 2;
+	public int iFrameTime = 2;
+    private bool _invincible = false;
 
-	private int _jumps;
+    private bool _grounded = false;
+    private bool _touchingWallLeft = false;
+    private bool _touchingWallRight = false;
+    private bool _normalJump = false;
+    private bool _airJump = false;
     private bool _stunned = false;
-	private int wallJumpModifier = 0;
 
     void Start()
     {
         _player = PlayerController();
         _rigidbody = GetComponent<Rigidbody2D>();
-		_collider = GetComponent<Collider2D>();
-        _jumps = 0;
 
 		//More color stuff
 		_playerSprite = GetComponent<SpriteRenderer>();
@@ -43,10 +45,21 @@ public class ChaserMovement : MonoBehaviour
 
     private void Update()
     {
-        if ((Input.GetButtonDown("JumpA_p" + _player) || Input.GetButtonDown("JumpB_p" + _player)) && !_stunned)
+        Vector2 position = new Vector2(transform.position.x, transform.position.y);
+        LayerMask mask = LayerMask.GetMask("Default");
+        RaycastHit2D hit = Physics2D.Raycast(position, Vector2.down, 2f, 1);
+        _grounded = Physics2D.Raycast(position, Vector2.down, 0.6f, 1) ? true : false;
+        if (_grounded)
         {
-            Jump();          
+            _normalJump = true;
+            _airJump = true;
         }
+        _touchingWallLeft = Physics2D.Raycast(position, Vector2.left, 0.6f, 1) ? true : false;
+        _touchingWallRight = Physics2D.Raycast(position, Vector2.right, 0.6f, 1) ? true : false;
+        if ((Input.GetButtonDown("JumpA_p" + _player) 
+            || Input.GetButtonDown("JumpB_p" + _player) 
+            || Input.GetAxis("JumpC_p" + _player) > 0.3) && !_stunned)
+            Jump();          
     }
 
     private void FixedUpdate()
@@ -68,51 +81,36 @@ public class ChaserMovement : MonoBehaviour
 
     private void StopMoving()
     {
-        _rigidbody.velocity = new Vector2(0, _rigidbody.velocity.y);
+        //_rigidbody.velocity = new Vector2(0, _rigidbody.velocity.y);
     }
 
     private void Jump()
     {
-        if (_jumps > 0)
+        if (_normalJump)
         {
-			if (wallJumpModifier != 0)
-				_rigidbody.velocity = new Vector2(wallJumpModifier*Jump_Force, Jump_Force);
-			else
-			{
-				_rigidbody.velocity = (new Vector2(0, Jump_Force));
-				if (_jumps == 1)
-					_jumps--;
-			}
+            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
+            _normalJump = false;
+            return;
+        }
+        if (_touchingWallLeft)
+        {
+            _rigidbody.AddForce(new Vector2(WallJumpForce, 0));
+            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force / 1.6f);
+            return;
+        }
+        if (_touchingWallRight)
+        {
+            _rigidbody.AddForce(new Vector2(-WallJumpForce, 0));
+            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force / 1.6f);
+            return;
+        }
+        if (_airJump)
+        {
+            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
+            _airJump = false;
+            return;
         }
     }
-
-	private void OnCollisionStay2D(Collision2D collision)
-	{
-		GameObject collidedWith = collision.gameObject;
-
-		if (collidedWith.GetComponent<Platform>() != null)
-		{
-			if (collision.GetContact(0).normal == new Vector2(-1, 0))
-			{
-				wallJumpModifier = -1;
-			}
-			else if (collision.GetContact(0).normal == new Vector2(1, 0))
-			{
-				wallJumpModifier = 1;
-			}
-
-			else _jumps = 2;
-		}
-	}
-
-	private void OnCollisionExit2D(Collision2D collision)
-	{
-		if (collision.gameObject.GetComponent<Platform>() != null)
-		{
-			_jumps = 1;
-			wallJumpModifier = 0;
-		}
-	}
 
 	public void Stun(float stunDuration)
     {
@@ -130,7 +128,7 @@ public class ChaserMovement : MonoBehaviour
 		_stunned = false;
 		_invincible = true;
 		_playerSprite.color = Color.gray;
-		Invoke("endIFrames", iFrames);
+		Invoke("endIFrames", iFrameTime);
 	}
 
 	private void endIFrames()

@@ -362,7 +362,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Move_Speed: 700
-  Jump_Force: 1500
+  Jump_Force: 35
+  WallJumpForce: 6000
 --- !u!114 &378489810
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -376,8 +377,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Move_Speed: 700
-  Jump_Force: 1500
-  iFrames: 2
+  Jump_Force: 35
+  WallJumpForce: 6000
+  iFrameTime: 2
 --- !u!1001 &414998871
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1373,8 +1375,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Move_Speed: 700
-  Jump_Force: 1500
-  iFrames: 2
+  Jump_Force: 35
+  WallJumpForce: 6000
+  iFrameTime: 2
 --- !u!114 &1653978209
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1388,7 +1391,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Move_Speed: 700
-  Jump_Force: 1500
+  Jump_Force: 35
+  WallJumpForce: 6000
 --- !u!1 &2024467281
 GameObject:
   m_ObjectHideFlags: 0
