@@ -9,27 +9,51 @@ public class LeaderMovement : MonoBehaviour
      * Movement script used by "Leader" players
      * 
      */
-    public float Move_Speed = 700f;
-    public float Jump_Force = 1500f;
+    public float Move_Speed;
+    public float Jump_Force;
     private int _player;
     private Rigidbody2D _rigidbody;
 
-    private int _jumps;
-    
+    private bool _grounded = false;
+    private bool _touchingWallLeft = false;
+    private bool _touchingWallRight = false;
+    private bool _normalJump = false;
+    private bool _wallJump = false;
+    private int _wallJumpCounter = -1;
 
     void Start()
     {
         _player = PlayerController();
         _rigidbody = GetComponent<Rigidbody2D>();
-        _jumps = 0;
     }
 
     private void Update()
     {
-        if (Input.GetButtonDown("JumpA_p" + _player) || Input.GetButtonDown("JumpB_p" + _player))
+        Vector2 position = new Vector2(transform.position.x, transform.position.y);
+        _grounded = Physics2D.BoxCast(position, new Vector2(1, 1), 0, Vector2.down, 0.05f, 1) ? true : false;
+        _touchingWallLeft = Physics2D.BoxCast(position, new Vector2(1, 1), 0, Vector2.left, 0.1f, 1) ? true : false;
+        _touchingWallRight = Physics2D.BoxCast(position, new Vector2(1, 1), 0, Vector2.right, 0.1f, 1) ? true : false;
+
+        if (_grounded)
         {
-            Jump();
+            _normalJump = true;
+            _wallJump = true;
         }
+        if (_touchingWallLeft)
+        {
+            if (_wallJumpCounter == 1)
+                _wallJump = true;
+            _wallJumpCounter = 0;
+        }
+        if (_touchingWallRight)
+        {
+            if (_wallJumpCounter == 0)
+                _wallJump = true;
+            _wallJumpCounter = 1;
+        }
+
+        if (Input.GetButtonDown("JumpA_p" + _player) || Input.GetButtonDown("JumpB_p" + _player))
+                Jump();
     }
 
     private void FixedUpdate()
@@ -55,20 +79,26 @@ public class LeaderMovement : MonoBehaviour
     }
 
     private void Jump()
-    {       
-        if (_jumps > 0)
+    {
+        if (_normalJump)
         {
-            _rigidbody.AddForce(new Vector2(0, Jump_Force));
-            _jumps--;
+            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
+            _normalJump = false;
+            return;
+        }
+        if (_touchingWallLeft && _wallJump)
+        {
+            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
+            _wallJump = false;
+            return;
+        }
+        if (_touchingWallRight && _wallJump)
+        {
+            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
+            _wallJump = false;
+            return;
         }
     }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.GetComponent<Platform>() != null)
-                _jumps = 1;                     
-    }
-
 
     private int PlayerController()
     {

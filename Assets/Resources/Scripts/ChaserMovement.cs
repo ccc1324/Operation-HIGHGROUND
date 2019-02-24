@@ -11,27 +11,66 @@ public class ChaserMovement : MonoBehaviour
      * Can jump in midair
      */
 
-    public float Move_Speed = 700f;
-    public float Jump_Force = 1500f;
+    public float Move_Speed;
+    public float Jump_Force;
     private int _player;
     private Rigidbody2D _rigidbody;
+    private Vector2 _emptyVector = Vector3.zero;
 
-    private int _jumps;
+    //Color stuff
+    private SpriteRenderer _playerSprite;
+	private Color _normColor;
+	private Color _stunColor;
+	public int iFrameTime = 2;
+    private bool _invincible = false;
+
+    private bool _grounded = false;
+    private bool _touchingWallLeft = false;
+    private bool _touchingWallRight = false;
+    private bool _normalJump = false;
+    private bool _wallJump = false;
+    private int _wallJumpCounter = -1;
+    private bool _airJump = false;
     private bool _stunned = false;
 
     void Start()
     {
         _player = PlayerController();
         _rigidbody = GetComponent<Rigidbody2D>();
-        _jumps = 0;
-    }
+
+		//More color stuff
+		_playerSprite = GetComponent<SpriteRenderer>();
+		_normColor = _playerSprite.color;
+		_stunColor = new Color(_normColor.r, _normColor.g, _normColor.b, 0.2f);
+	}
 
     private void Update()
     {
-        if ((Input.GetButtonDown("JumpA_p" + _player) || Input.GetButtonDown("JumpB_p" + _player)) && !_stunned)
-        {           
-            Jump();          
+        Vector2 position = new Vector2(transform.position.x, transform.position.y);
+        _grounded = Physics2D.BoxCast(position, new Vector2(1, 1), 0, Vector2.down, 0.05f, 1) ? true : false;
+        _touchingWallLeft = Physics2D.BoxCast(position, new Vector2(1, 1), 0, Vector2.left, 0.1f, 1) ? true : false;
+        _touchingWallRight = Physics2D.BoxCast(position, new Vector2(1, 1), 0, Vector2.right, 0.1f, 1) ? true : false;
+
+        if (_grounded)
+        {
+            _normalJump = true;
+            _airJump = true;
+            _wallJump = true;
         }
+        if (_touchingWallLeft)
+        {
+            if (_wallJumpCounter == 1 || _wallJumpCounter == -1)
+                _wallJump = true;
+            _wallJumpCounter = 0;
+        }
+        if (_touchingWallRight)
+        {
+            if (_wallJumpCounter == 0 || _wallJumpCounter == -1)
+                _wallJump = true;
+            _wallJumpCounter = 1;
+        }
+        if (Input.GetButtonDown("JumpA_p" + _player) || Input.GetButtonDown("JumpB_p" + _player) && !_stunned)
+            Jump();          
     }
 
     private void FixedUpdate()
@@ -58,35 +97,59 @@ public class ChaserMovement : MonoBehaviour
 
     private void Jump()
     {
-        if (_jumps > 0)
+        if (_normalJump)
         {
-            _rigidbody.AddForce(new Vector2(0, Jump_Force));
-            _jumps--;
+            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
+            _normalJump = false;
+            return;
+        }
+        if (_touchingWallLeft && _wallJump)
+        {
+            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
+            _wallJump = false;
+            return;
+        }
+        if (_touchingWallRight && _wallJump)
+        {
+            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
+            _wallJump = false;
+            return;
+        }
+        if (_airJump)
+        {
+            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
+            _airJump = false;
+            return;
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+	public void Stun(float stunDuration)
     {
-        if (collision.gameObject.GetComponent<Platform>() != null)
-            _jumps = 2;        
-    }
-
-    public void Stun(float stunDuration)
-    {
-        if (!_stunned) //don't want people to be perma-stunned, and also makes it so that ParalyzeHeal won't be called randomly
-        {
-            _stunned = true;
-            Invoke("ParalyzeHeal", stunDuration);
-        }
+		if (!_stunned && !_invincible) //don't want people to be perma-stunned, and also makes it so that ParalyzeHeal won't be called randomly
+		{
+			Debug.Log("stunned");
+			_stunned = true;
+			_playerSprite.color = _stunColor;
+			Invoke("ParalyzeHeal", stunDuration);
+		}
     }
 
     public void ParalyzeHeal()
     {
-        _stunned = false;
-    }
+		_stunned = false;
+		_invincible = true;
+		_playerSprite.color = Color.gray;
+		Invoke("endIFrames", iFrameTime);
+	}
+
+	private void endIFrames()
+	{
+		_invincible = false;
+		_playerSprite.color = _normColor;
+	}
 
 
-    private int PlayerController()
+	private int PlayerController()
     {
         string name = gameObject.name;
         switch (name)
