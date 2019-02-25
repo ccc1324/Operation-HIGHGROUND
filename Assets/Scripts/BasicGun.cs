@@ -15,26 +15,29 @@ public class BasicGun : MonoBehaviour
     private Transform _holder;
     private Camera _cam;
     private float _time_last_shot = -100; //initialized to -100 so that there isn't an initial reload time
+    public static GunReload gr;
 
     void Start() {
         _player = PlayerController();
         _holder = transform;
-        _cam = FindObjectOfType<Camera>();
-        BulletPrefab = (GameObject)Resources.Load("Prefabs/BasicBullet", typeof(GameObject));
+        _cam = FindObjectOfType<Camera>();    
     }
 
     void Update()
     {
+        gr = GameObject.Find("Reload" + _player).GetComponent<GunReload>();
         //if (Input.GetAxis("Fire_p" + _player) > 0 || Input.GetButton("Fire_p" + _player))
-		if(Input.GetAxisRaw("AimX_p" + _player) != 0 || Input.GetAxisRaw("AimY_p" + _player) != 0)
-
+        if (Mathf.Abs(Input.GetAxisRaw("AimX_p" + _player)) > 0.9f || Mathf.Abs(Input.GetAxisRaw("AimY_p" + _player)) > 0.9f)
 		{
             if (Time.time - _time_last_shot > ReloadTime)
             {
                 Shoot();
+                gr.SetValue(0);
                 _time_last_shot = Time.time;
             }      
         }
+        if (gr.GetValue() < 60)
+            gr.AddValue(1);
     }
 
     public void Shoot()

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,8 +12,8 @@ public class GameManager : MonoBehaviour
      * Death is implemented in the HealthUpdate function
      */
 
-    public Text Player1Health; //temporary
-    public Text Player2Health; //temporary
+    public static Healthbars Player1Health; //temporary
+    public static Healthbars Player2Health; //temporary
 
     public float OvertakeTime = 0.5f;
     private float _time = 0;
@@ -20,13 +21,17 @@ public class GameManager : MonoBehaviour
     //health stuff
     public float HealthTickDelay = 2;
     public int HealthTickDamage = 2;
-    public int MaxHealth = 200;
+    public int MaxHealth = 100;
     public int OffScreenDamage = 20;
     private float _time_since_healthdrain = 0;
 
     private Camera _camera;
     private LevelManager _level_manager;
     private GameObject[] _players;
+    private GameObject[] _playersLeft;
+    private GameObject[] _djIcons;
+    private GameObject[] _gIcons;
+    private GameObject[] _rIcons;
     private List<PlayerComponents> _player_components;
 
     private GameObject _leader;
@@ -46,20 +51,32 @@ public class GameManager : MonoBehaviour
         _camera_height = _camera.transform.position.y;
         _level_manager = FindObjectOfType<LevelManager>();
         _players = GameObject.FindGameObjectsWithTag("Player");
+        _djIcons = GameObject.FindGameObjectsWithTag("DJ");
+        _gIcons = GameObject.FindGameObjectsWithTag("G");
+        _rIcons = GameObject.FindGameObjectsWithTag("R");
         _player_components = new List<PlayerComponents>();
         _leader = GameObject.Find("Fake Leader");
         _leader_num = 0;
+        Player1Health = GameObject.Find("P1Health").GetComponent<Healthbars>();
+        Player2Health = GameObject.Find("P2Health").GetComponent<Healthbars>();
         //the point of player_components is we don't want to be calling GetComponent every Update cycle
         //apparently it can make the game laggy, so we want to "stash" those components
         int i = -1;
         foreach (GameObject player in _players)
         {
             _player_components.Add(new PlayerComponents(player, GetPlayerNumber(player), MaxHealth));
-            player.transform.position = new Vector3(i, 3, 0);
+            player.transform.position = new Vector3(i, 4, 0);
             i++;
         }
         _level_manager.UpdateCurrentLevel(0);
         _respawn_points.AddRange(_level_manager.GetRespawnPoints());
+
+        for (i=0; i<_djIcons.Length; i++)
+        {          
+            _djIcons[i].SetActive(true);           
+            _gIcons[i].SetActive(false);          
+            _rIcons[i].SetActive(false);
+        }
     }
 
     private void Update()
@@ -80,12 +97,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        //Health Management
-        if (Time.time - _time_since_healthdrain >= HealthTickDelay)
-        {
-            HealthUpdate();
-            _time_since_healthdrain = Time.time;
-        }
+        
 
         //Camera Management
         _leader_height = _leader.transform.position.y;
@@ -115,6 +127,25 @@ public class GameManager : MonoBehaviour
                     player.Reference.transform.position = FindClosetRespawnPoint(_leader_height - _camera.orthographicSize / 2);
                 }
             }
+        }
+
+        //Health Management
+        if (Time.time - _time_since_healthdrain >= HealthTickDelay)
+        {
+            HealthUpdate();
+            _time_since_healthdrain = Time.time;
+        }
+        Player1Health.SetValue(_player_components[0].Health);
+        Player2Health.SetValue(_player_components[1].Health);
+
+        //Game Over Conditions
+        _playersLeft = GameObject.FindGameObjectsWithTag("Player");
+        if (_playersLeft.Length == 1)
+        {
+            if (GameObject.Find("Player1") != null) //Player 1 Won
+                SceneManager.LoadScene(4);
+            else if (GameObject.Find("Player2") != null) //Player 2 Won
+                SceneManager.LoadScene(5);
         }
     }
 
@@ -174,6 +205,9 @@ public class GameManager : MonoBehaviour
         {
             if (player.Number != _leader_num) //set Chasers
             {
+                _djIcons[player.Number - 1].SetActive(true);
+                _gIcons[player.Number - 1].SetActive(false);
+                _rIcons[player.Number - 1].SetActive(false);
                 player.Leader.enabled = false;
                 player.Gun.enabled = false;
                 player.Chaser.enabled = true;
@@ -181,6 +215,9 @@ public class GameManager : MonoBehaviour
             }
             else //set Leader
             {
+                _djIcons[player.Number - 1].SetActive(false);
+                _gIcons[player.Number - 1].SetActive(true);
+                _rIcons[player.Number - 1].SetActive(true);
                 player.Chaser.enabled = false;
                 player.Leader.enabled = true;
                 player.Gun.enabled = true;
@@ -191,6 +228,7 @@ public class GameManager : MonoBehaviour
 
     private void HealthUpdate()
     {
+        if (_leader_num != 0)
         foreach (PlayerComponents player in _player_components)
         {
             if (player.Number != _leader_num && player.Health > 0)
@@ -198,10 +236,7 @@ public class GameManager : MonoBehaviour
             if (player.Health <= 0)
                 Destroy(player.Reference.gameObject);
         }
-
         //Update Health Canvas (temporary)
-        Player1Health.text = "Player1 Health: " + _player_components[0].Health;
-        Player2Health.text = "Player2 Health: " + _player_components[1].Health;
     }
 
     //Helper function that finds closest respawn point to a certain location

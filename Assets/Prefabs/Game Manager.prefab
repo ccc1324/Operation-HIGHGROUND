@@ -75,12 +75,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84c09428b70651749a3491f58f5d61b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Player1Health: {fileID: 0}
-  Player2Health: {fileID: 0}
   OvertakeTime: 0.5
   HealthTickDelay: 2
   HealthTickDamage: 2
-  MaxHealth: 200
+  MaxHealth: 100
   OffScreenDamage: 20
   LevelBuffer: 0
 --- !u!114 &8279662212169177034
@@ -95,5 +93,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f6a94bca0e1d0d4d896204d26b295b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StartLevel: {fileID: 0}
-  Levels: []
+  StartLevel: {fileID: 5847735333651242526, guid: c69d068c6805c714e8b4ef00473f2305,
+    type: 3}
+  Levels:
+  - {fileID: 5847735333651242526, guid: a987080a00f90ec40a8b480d7e815d48, type: 3}
+  - {fileID: 5847735333651242526, guid: ee3a46110c45fdc4daf08f362712094b, type: 3}

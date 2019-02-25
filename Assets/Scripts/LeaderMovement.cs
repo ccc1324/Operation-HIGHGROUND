@@ -30,7 +30,7 @@ public class LeaderMovement : MonoBehaviour
     private void Update()
     {
         Vector2 position = new Vector2(transform.position.x, transform.position.y);
-        _grounded = Physics2D.BoxCast(position, new Vector2(1, 1), 0, Vector2.down, 0.05f, 1) ? true : false;
+        _grounded = Physics2D.BoxCast(position, new Vector2(2, 2), 0, Vector2.down, 0.05f, 1) ? true : false;
         _touchingWallLeft = Physics2D.BoxCast(position, new Vector2(1, 1), 0, Vector2.left, 0.1f, 1) ? true : false;
         _touchingWallRight = Physics2D.BoxCast(position, new Vector2(1, 1), 0, Vector2.right, 0.1f, 1) ? true : false;
 
