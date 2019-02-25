@@ -13,6 +13,10 @@ public class LeaderMovement : MonoBehaviour
     public float Jump_Force;
     private int _player;
     private Rigidbody2D _rigidbody;
+    private Transform _transform;
+    private Vector3 _facingRight = new Vector3(0, 0, 0);
+    private Vector3 _facingLeft = new Vector3(0, 180, 0);
+    private Animator _animator;
 
     private bool _grounded = false;
     private bool _touchingWallLeft = false;
@@ -25,6 +29,8 @@ public class LeaderMovement : MonoBehaviour
     {
         _player = PlayerController();
         _rigidbody = GetComponent<Rigidbody2D>();
+        _transform = transform;
+        _animator = GetComponent<Animator>();
     }
 
     private void Update()
@@ -68,9 +74,16 @@ public class LeaderMovement : MonoBehaviour
     private void Move(float direction)
     {
         if (direction > 0)
+        {
             _rigidbody.velocity = new Vector2(Move_Speed * Time.fixedDeltaTime, _rigidbody.velocity.y);
+            _transform.eulerAngles = _facingRight;
+        }
         else
+        {
             _rigidbody.velocity = new Vector2(-Move_Speed * Time.fixedDeltaTime, _rigidbody.velocity.y);
+            _transform.eulerAngles = _facingLeft;
+        }
+        _animator.SetBool("Running", true);
     }
 
     private void StopMoving()

@@ -15,7 +15,11 @@ public class ChaserMovement : MonoBehaviour
     public float Jump_Force;
     private int _player;
     private Rigidbody2D _rigidbody;
-    private Vector2 _emptyVector = Vector3.zero;
+    private Transform _transform;
+    private Vector3 _facingRight = new Vector3(0, 0, 0);
+    private Vector3 _facingLeft = new Vector3(0, 180, 0);
+    //private Animator _animator;
+    private animations _animator;
 
     //Color stuff
     private SpriteRenderer _playerSprite;
@@ -37,6 +41,9 @@ public class ChaserMovement : MonoBehaviour
     {
         _player = PlayerController();
         _rigidbody = GetComponent<Rigidbody2D>();
+        _transform = transform;
+        //_animator = GetComponent<Animator>();
+        _animator = GetComponent<animations>();
 
 		//More color stuff
 		_playerSprite = GetComponent<SpriteRenderer>();
@@ -85,9 +92,16 @@ public class ChaserMovement : MonoBehaviour
     private void Move(float direction)
     {
         if (direction > 0)
+        {
             _rigidbody.velocity = new Vector2(Move_Speed * Time.fixedDeltaTime, _rigidbody.velocity.y);
+            _transform.eulerAngles = _facingRight;
+        }
         else
+        {
             _rigidbody.velocity = new Vector2(-Move_Speed * Time.fixedDeltaTime, _rigidbody.velocity.y);
+            _transform.eulerAngles = _facingLeft;
+        }
+        //_animator.SetBool("Running", true);
     }
 
     private void StopMoving()
@@ -127,7 +141,7 @@ public class ChaserMovement : MonoBehaviour
     {
 		if (!_stunned && !_invincible) //don't want people to be perma-stunned, and also makes it so that ParalyzeHeal won't be called randomly
 		{
-			Debug.Log("stunned");
+            _animator.changeSprite("stun");
 			_stunned = true;
 			_playerSprite.color = _stunColor;
 			Invoke("ParalyzeHeal", stunDuration);
@@ -136,7 +150,8 @@ public class ChaserMovement : MonoBehaviour
 
     public void ParalyzeHeal()
     {
-		_stunned = false;
+        _animator.changeSprite("invul");
+        _stunned = false;
 		_invincible = true;
 		_playerSprite.color = Color.gray;
 		Invoke("endIFrames", iFrameTime);
@@ -144,7 +159,8 @@ public class ChaserMovement : MonoBehaviour
 
 	private void endIFrames()
 	{
-		_invincible = false;
+        _animator.changeSprite("idle");
+        _invincible = false;
 		_playerSprite.color = _normColor;
 	}
 

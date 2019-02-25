@@ -543,7 +543,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 117.2, y: -103.640015}
+  m_AnchoredPosition: {x: 117.20001, y: -103.640015}
   m_SizeDelta: {x: 218.2, y: 197.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &328211312
@@ -732,7 +732,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ReloadTime: 1
-  BulletPrefab: {fileID: 0}
+  BulletPrefab: {fileID: 4749954130578106137, guid: d1a11a1f4c25c9a4b8c4e873a8d51de6,
+    type: 3}
 --- !u!114 &378489809
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -746,7 +747,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Move_Speed: 750
-  Jump_Force: 1700
+  Jump_Force: 35
 --- !u!114 &378489810
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -760,7 +761,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Move_Speed: 750
-  Jump_Force: 1700
+  Jump_Force: 35
+  iFrameTime: 2
 --- !u!1 &381095388
 GameObject:
   m_ObjectHideFlags: 0
@@ -995,7 +997,7 @@ PrefabInstance:
         type: 3}
       propertyPath: StartLevel
       value: 
-      objectReference: {fileID: 5847735333651242526, guid: 5b7fddbb55f23424d80db45aed2c3f9e,
+      objectReference: {fileID: 5847735333651242526, guid: c69d068c6805c714e8b4ef00473f2305,
         type: 3}
     - target: {fileID: 8279662212169177034, guid: a211b3ed323ada342bcd17c8999c7328,
         type: 3}
@@ -2224,7 +2226,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -118.3, y: -104.41}
+  m_AnchoredPosition: {x: -118.29999, y: -104.41}
   m_SizeDelta: {x: 218.2, y: 195.77}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1362874329
@@ -2640,7 +2642,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ReloadTime: 1
-  BulletPrefab: {fileID: 0}
+  BulletPrefab: {fileID: 4749954130578106137, guid: d1a11a1f4c25c9a4b8c4e873a8d51de6,
+    type: 3}
 --- !u!50 &1653978204
 Rigidbody2D:
   serializedVersion: 4
@@ -2763,7 +2766,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Move_Speed: 750
-  Jump_Force: 1700
+  Jump_Force: 35
+  iFrameTime: 2
 --- !u!114 &1653978209
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2777,7 +2781,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Move_Speed: 750
-  Jump_Force: 1700
+  Jump_Force: 35
 --- !u!1 &1690853279
 GameObject:
   m_ObjectHideFlags: 0
