@@ -25,6 +25,9 @@ public class LeaderMovement : MonoBehaviour
     private bool _wallJump = false;
     private int _wallJumpCounter = -1;
 
+    //temporary solution
+    public GameObject FinishLine;
+
     void Start()
     {
         _player = PlayerController();
@@ -37,8 +40,8 @@ public class LeaderMovement : MonoBehaviour
     {
         Vector2 position = new Vector2(transform.position.x, transform.position.y);
         _grounded = Physics2D.BoxCast(position, new Vector2(0.5f, 0.001f), 0, Vector2.down, 1f, 1) ? true : false;
-        _touchingWallLeft = Physics2D.BoxCast(position, new Vector2(0.001f, 0.3f), 0, Vector2.left, 0.5f, 1) ? true : false;
-        _touchingWallRight = Physics2D.BoxCast(position, new Vector2(0.001f, 0.3f), 0, Vector2.right, 0.5f, 1) ? true : false;
+        _touchingWallLeft = Physics2D.BoxCast(position, new Vector2(0.001f, 0.35f), 0, Vector2.left, 0.5f, 1) ? true : false;
+        _touchingWallRight = Physics2D.BoxCast(position, new Vector2(0.001f, 0.35f), 0, Vector2.right, 0.5f, 1) ? true : false;
 
         if (_grounded)
         {
@@ -60,6 +63,9 @@ public class LeaderMovement : MonoBehaviour
 
         if (Input.GetButtonDown("JumpA_p" + _player) || Input.GetButtonDown("JumpB_p" + _player))
                 Jump();
+
+        //temporary
+        FinishLine.transform.position = new Vector2 (-6.4f, transform.position.y);
     }
 
     private void FixedUpdate()

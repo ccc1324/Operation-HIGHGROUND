@@ -56,8 +56,8 @@ public class ChaserMovement : MonoBehaviour
     {
         Vector2 position = new Vector2(transform.position.x, transform.position.y);
         _grounded = Physics2D.BoxCast(position, new Vector2(0.5f, 0.001f), 0, Vector2.down, 1f, 1) ? true : false;
-        _touchingWallLeft = Physics2D.BoxCast(position, new Vector2(0.001f, 0.3f), 0, Vector2.left, 0.5f, 1) ? true : false;
-        _touchingWallRight = Physics2D.BoxCast(position, new Vector2(0.001f, 0.3f), 0, Vector2.right, 0.5f, 1) ? true : false;
+        _touchingWallLeft = Physics2D.BoxCast(position, new Vector2(0.001f, 0.35f), 0, Vector2.left, 0.5f, 1) ? true : false;
+        _touchingWallRight = Physics2D.BoxCast(position, new Vector2(0.001f, 0.35f), 0, Vector2.right, 0.5f, 1) ? true : false;
 
         if (_grounded)
         {
