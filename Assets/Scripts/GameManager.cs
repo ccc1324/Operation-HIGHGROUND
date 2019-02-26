@@ -135,8 +135,16 @@ public class GameManager : MonoBehaviour
             HealthUpdate();
             _time_since_healthdrain = Time.time;
         }
-        Player1Health.SetValue(_player_components[0].Health);
-        Player2Health.SetValue(_player_components[1].Health);
+        foreach (PlayerComponents player in _player_components)
+        {
+            if (player.Reference != null)
+            {
+                if (player.Number == 1)
+                    Player1Health.SetValue(player.Health);
+                else if (player.Number == 2)
+                    Player2Health.SetValue(player.Health);
+            }
+        }
 
         //Game Over Conditions
         _playersLeft = GameObject.FindGameObjectsWithTag("Player");

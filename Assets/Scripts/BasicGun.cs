@@ -54,9 +54,9 @@ public class BasicGun : MonoBehaviour
         Quaternion rotationa = Quaternion.Euler(0, 0, angle - 20);
         Quaternion rotationb = Quaternion.Euler(0, 0, angle);
         Quaternion rotationc = Quaternion.Euler(0, 0, angle + 20);
-        GameObject bulleta = Instantiate(BulletPrefab, _holder.position, rotationa, _holder);
-        GameObject bulletb = Instantiate(BulletPrefab, _holder.position, rotationb, _holder);
-        GameObject bulletc = Instantiate(BulletPrefab, _holder.position, rotationc, _holder);
+        GameObject bulleta = Instantiate(BulletPrefab, _holder.position, rotationa);
+        GameObject bulletb = Instantiate(BulletPrefab, _holder.position, rotationb);
+        GameObject bulletc = Instantiate(BulletPrefab, _holder.position, rotationc);
     }
 
     private int PlayerController()

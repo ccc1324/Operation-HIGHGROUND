@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 public class ChaserMovement : MonoBehaviour
@@ -32,7 +33,7 @@ public class ChaserMovement : MonoBehaviour
     private bool _touchingWallLeft = false;
     private bool _touchingWallRight = false;
     private bool _normalJump = false;
-    private bool _wallJump = false;
+    private int _wallJump = 0;
     private int _wallJumpCounter = -1;
     private bool _airJump = false;
     private bool _stunned = false;
@@ -54,26 +55,26 @@ public class ChaserMovement : MonoBehaviour
     private void Update()
     {
         Vector2 position = new Vector2(transform.position.x, transform.position.y);
-        _grounded = Physics2D.BoxCast(position, new Vector2(2, 2), 0, Vector2.down, 0.05f, 1) ? true : false;
-        _touchingWallLeft = Physics2D.BoxCast(position, new Vector2(1, 1), 0, Vector2.left, 0.1f, 1) ? true : false;
-        _touchingWallRight = Physics2D.BoxCast(position, new Vector2(1, 1), 0, Vector2.right, 0.1f, 1) ? true : false;
+        _grounded = Physics2D.BoxCast(position, new Vector2(0.5f, 0.001f), 0, Vector2.down, 1f, 1) ? true : false;
+        _touchingWallLeft = Physics2D.BoxCast(position, new Vector2(0.001f, 0.3f), 0, Vector2.left, 0.5f, 1) ? true : false;
+        _touchingWallRight = Physics2D.BoxCast(position, new Vector2(0.001f, 0.3f), 0, Vector2.right, 0.5f, 1) ? true : false;
 
         if (_grounded)
         {
             _normalJump = true;
             _airJump = true;
-            _wallJump = true;
+            _wallJump = 2;
         }
         if (_touchingWallLeft)
         {
             if (_wallJumpCounter == 1 || _wallJumpCounter == -1)
-                _wallJump = true;
+                _wallJump = 2;
             _wallJumpCounter = 0;
         }
         if (_touchingWallRight)
         {
             if (_wallJumpCounter == 0 || _wallJumpCounter == -1)
-                _wallJump = true;
+                _wallJump = 2;
             _wallJumpCounter = 1;
         }
         if (Input.GetButtonDown("JumpA_p" + _player) || Input.GetButtonDown("JumpB_p" + _player) && !_stunned)
@@ -117,16 +118,16 @@ public class ChaserMovement : MonoBehaviour
             _normalJump = false;
             return;
         }
-        if (_touchingWallLeft && _wallJump)
+        if (_touchingWallLeft && _wallJump > 0)
         {
             _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
-            _wallJump = false;
+            _wallJump -= 1;
             return;
         }
-        if (_touchingWallRight && _wallJump)
+        if (_touchingWallRight && _wallJump > 0)
         {
             _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
-            _wallJump = false;
+            _wallJump -= 1;
             return;
         }
         if (_airJump)

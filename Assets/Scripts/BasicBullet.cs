@@ -18,6 +18,7 @@ public class BasicBullet : MonoBehaviour
         _rb = GetComponent<Rigidbody2D>();
         float rotation = transform.rotation.eulerAngles.z / 180 * Mathf.PI;
         _rb.velocity = new Vector2(Mathf.Cos(rotation), Mathf.Sin(rotation)) * Speed;
+        Invoke("DestroyThis", 3);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -29,6 +30,11 @@ public class BasicBullet : MonoBehaviour
             Destroy(gameObject);
         }
         
+    }
+
+    private void DestroyThis()
+    {
+        Destroy(gameObject);
     }
 
 }
