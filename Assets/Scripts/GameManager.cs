@@ -14,6 +14,8 @@ public class GameManager : MonoBehaviour
 
     public static Healthbars Player1Health; //temporary
     public static Healthbars Player2Health; //temporary
+    public static ImageMoving Player1Icon;
+    public static ImageMoving Player2Icon;
 
     public float OvertakeTime = 0.5f;
     private float _time = 0;
@@ -59,6 +61,8 @@ public class GameManager : MonoBehaviour
         _leader_num = 0;
         Player1Health = GameObject.Find("P1Health").GetComponent<Healthbars>();
         Player2Health = GameObject.Find("P2Health").GetComponent<Healthbars>();
+        Player1Icon = GameObject.Find("ObiWanHealthBarPic").GetComponent<ImageMoving>();
+        Player2Icon = GameObject.Find("AnakinHealthBarPic").GetComponent<ImageMoving>();
         //the point of player_components is we don't want to be calling GetComponent every Update cycle
         //apparently it can make the game laggy, so we want to "stash" those components
         int i = -1;
@@ -140,9 +144,15 @@ public class GameManager : MonoBehaviour
             if (player.Reference != null)
             {
                 if (player.Number == 1)
+                {
                     Player1Health.SetValue(player.Health);
+                    Player1Icon.NewYValue(Player1Health.GetValue());
+                }
                 else if (player.Number == 2)
+                {
                     Player2Health.SetValue(player.Health);
+                    Player2Icon.NewYValue(Player2Health.GetValue());
+                }
             }
         }
 
