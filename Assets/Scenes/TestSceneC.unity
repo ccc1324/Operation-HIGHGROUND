@@ -2274,6 +2274,28 @@ PrefabInstance:
       propertyPath: MaxHealth
       value: 100
       objectReference: {fileID: 0}
+    - target: {fileID: 2151802781793669939, guid: a211b3ed323ada342bcd17c8999c7328,
+        type: 3}
+      propertyPath: LevelBuffer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8279662212169177034, guid: a211b3ed323ada342bcd17c8999c7328,
+        type: 3}
+      propertyPath: Levels.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8279662212169177034, guid: a211b3ed323ada342bcd17c8999c7328,
+        type: 3}
+      propertyPath: Levels.Array.data[2]
+      value: 
+      objectReference: {fileID: 5847735333651242526, guid: 0700463b3fb0cda4293e3afe6e6fe56e,
+        type: 3}
+    - target: {fileID: 8279662212169177034, guid: a211b3ed323ada342bcd17c8999c7328,
+        type: 3}
+      propertyPath: Levels.Array.data[3]
+      value: 
+      objectReference: {fileID: 5847735333651242526, guid: b79a86bbcc9262f4eaad584cdbd15d4c,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a211b3ed323ada342bcd17c8999c7328, type: 3}
 --- !u!1 &473789046
@@ -3257,7 +3279,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: fdb1459f22de1c7449c7e4bf3ea9f8d5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0c0fca3dd24caf64181fb4a22a7c07e5, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -4440,7 +4462,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1951239544}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -6.4, y: 30.1, z: 0}
+  m_LocalPosition: {x: -6.4, y: 30, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1618238831}
