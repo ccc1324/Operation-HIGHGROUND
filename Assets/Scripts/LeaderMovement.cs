@@ -40,32 +40,41 @@ public class LeaderMovement : MonoBehaviour
     {
         Vector2 position = new Vector2(transform.position.x, transform.position.y - 0.35f);
         _grounded = Physics2D.BoxCast(position, new Vector2(1.2f, 0.001f), 0, Vector2.down, 1.00f, 1) ? true : false;
+        _animator.SetBool("Grounded", _grounded);
         _touchingWallLeft = Physics2D.BoxCast(position, new Vector2(0.001f, 1.7f), 0, Vector2.left, 0.9f, 1) ? true : false;
         _touchingWallRight = Physics2D.BoxCast(position, new Vector2(0.001f, 1.7f), 0, Vector2.right, 0.9f, 1) ? true : false;
+        _animator.SetBool("TouchingWall", _touchingWallLeft || _touchingWallRight);
 
         if (_grounded)
         {
             _normalJump = true;
             _wallJump = true;
+            _animator.SetFloat("Walljumps", 1);
         }
         if (_touchingWallLeft)
         {
-            if (_wallJumpCounter == 1)
+            if (_wallJumpCounter == 1 || _wallJumpCounter == -1)
+            {
                 _wallJump = true;
+                _animator.SetFloat("Walljumps", 1);
+            }
             _wallJumpCounter = 0;
         }
         if (_touchingWallRight)
         {
-            if (_wallJumpCounter == 0)
+            if (_wallJumpCounter == 0 || _wallJumpCounter == -1)
+            {
                 _wallJump = true;
+                _animator.SetFloat("Walljumps", 1);
+            }
             _wallJumpCounter = 1;
         }
 
         if (Input.GetButtonDown("JumpA_p" + _player) || Input.GetButtonDown("JumpB_p" + _player))
                 Jump();
 
-        //temporary
-        FinishLine.transform.position = new Vector2 (-6.4f, transform.position.y);
+        //red/blue bar
+        FinishLine.transform.position = new Vector2 (0f, transform.position.y);
     }
 
     private void FixedUpdate()
@@ -89,12 +98,13 @@ public class LeaderMovement : MonoBehaviour
             _rigidbody.velocity = new Vector2(-Move_Speed * Time.fixedDeltaTime, _rigidbody.velocity.y);
             _transform.eulerAngles = _facingLeft;
         }
-        _animator.SetBool("Running", true);
+        _animator.SetBool("Moving", true);
     }
 
     private void StopMoving()
     {
         _rigidbody.velocity = new Vector2(0, _rigidbody.velocity.y);
+        _animator.SetBool("Moving", false);
     }
 
     private void Jump()
@@ -109,12 +119,14 @@ public class LeaderMovement : MonoBehaviour
         {
             _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
             _wallJump = false;
+            _animator.SetFloat("Walljumps", 0);
             return;
         }
         if (_touchingWallRight && _wallJump)
         {
             _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
             _wallJump = false;
+            _animator.SetFloat("Walljumps", 0);
             return;
         }
     }
