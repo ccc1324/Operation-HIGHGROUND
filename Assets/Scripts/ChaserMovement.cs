@@ -14,6 +14,7 @@ public class ChaserMovement : MonoBehaviour
 
     public float Move_Speed;
     public float Jump_Force;
+    public GameObject Forcefield;
     private int _player;
     private Animator _animator;
     private Rigidbody2D _rigidbody;
@@ -40,6 +41,7 @@ public class ChaserMovement : MonoBehaviour
 
     void Start()
     {
+        Forcefield.SetActive(false);
         _player = PlayerController();
         _animator = GetComponent<Animator>();
         _rigidbody = GetComponent<Rigidbody2D>();
@@ -157,13 +159,16 @@ public class ChaserMovement : MonoBehaviour
         _stunned = false;
         _animator.SetBool("Stunned", false);
         _invincible = true;
-		Invoke("endIFrames", iFrameTime);
+        Forcefield.SetActive(true);
+        Forcefield.transform.localScale = new Vector3(0.5f, 0.5f, 1);
+        Invoke("endIFrames", iFrameTime);
 	}
 
 	private void endIFrames()
 	{
         _invincible = false;
-	}
+        Forcefield.SetActive(false);
+    }
 
 
 	private int PlayerController()
