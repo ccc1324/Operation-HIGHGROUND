@@ -17,10 +17,13 @@ public class BasicGun : MonoBehaviour
     private float _time_last_shot = -100; //initialized to -100 so that there isn't an initial reload time
     public static GunReload gr;
 
+	private sound _sound;
+
     void Start() {
         _player = PlayerController();
         _holder = transform;
-        _cam = FindObjectOfType<Camera>();    
+        _cam = FindObjectOfType<Camera>();
+		_sound = GetComponent<sound>();
     }
 
     void Update()
@@ -57,6 +60,10 @@ public class BasicGun : MonoBehaviour
         GameObject bulleta = Instantiate(BulletPrefab, _holder.position, rotationa);
         GameObject bulletb = Instantiate(BulletPrefab, _holder.position, rotationb);
         GameObject bulletc = Instantiate(BulletPrefab, _holder.position, rotationc);
+
+		//Play shoot SFX
+		_sound.playSound("shoot");
+		Debug.Log("pew");
     }
 
     private int PlayerController()

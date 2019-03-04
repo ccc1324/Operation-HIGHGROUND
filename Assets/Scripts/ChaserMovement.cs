@@ -34,6 +34,8 @@ public class ChaserMovement : MonoBehaviour
     private bool _airJump = false;
     private bool _stunned = false;
 
+	private sound _sound;
+
     //Boxcast Debug Stuff
     //public Text Ground;
     //public Text Left;
@@ -46,6 +48,7 @@ public class ChaserMovement : MonoBehaviour
         _animator = GetComponent<Animator>();
         _rigidbody = GetComponent<Rigidbody2D>();
         _transform = transform;
+		_sound = GetComponent<sound>();
 	}
 
     private void Update()
@@ -116,7 +119,11 @@ public class ChaserMovement : MonoBehaviour
 
     private void Jump()
     {
-        if (_normalJump)
+		//Play sound if able to jump
+		if (_normalJump || _airJump || ((_touchingWallLeft || _touchingWallRight) && _wallJump>0))
+			_sound.playSound("jump");
+
+		if (_normalJump)
         {
             _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
             _normalJump = false;

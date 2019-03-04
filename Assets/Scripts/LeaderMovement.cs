@@ -28,12 +28,15 @@ public class LeaderMovement : MonoBehaviour
     //temporary solution
     public GameObject FinishLine;
 
+	private sound _sound;
+
     void Start()
     {
         _player = PlayerController();
         _rigidbody = GetComponent<Rigidbody2D>();
         _transform = transform;
         _animator = GetComponent<Animator>();
+		_sound = GetComponent<sound>();
     }
 
     private void Update()
@@ -109,6 +112,10 @@ public class LeaderMovement : MonoBehaviour
 
     private void Jump()
     {
+		//Play sound if able to jump
+		if (_normalJump || ((_touchingWallLeft || _touchingWallRight) && _wallJump))
+			_sound.playSound("jump");
+
         if (_normalJump)
         {
             _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);

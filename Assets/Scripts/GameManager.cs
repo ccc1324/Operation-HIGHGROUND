@@ -93,6 +93,7 @@ public class GameManager : MonoBehaviour
                 //if overtaking occurs
                 if (player.transform.position.y > _leader.transform.position.y && player.name != _leader.name)
                 {
+					player.GetComponent<sound>().playSound("overtake");
                     _leader = player;
                     _leader_num = GetPlayerNumber(player);
                     Overtake(player.transform.position);
