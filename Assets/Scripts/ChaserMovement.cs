@@ -158,6 +158,7 @@ public class ChaserMovement : MonoBehaviour
 			_stunned = true;
 			Invoke("ParalyzeHeal", stunDuration);
             _animator.SetBool("Stunned", true);
+            _sound.playSound("stun");
 		}
     }
 
