@@ -40,8 +40,7 @@ public class LevelManager : MonoBehaviour
         do
         {
             nextLevel = _rng.Next(0, Levels.Length);
-        } while (false); //use the one below when we have levels to randomize
-        //while (nextLevel != _current_level_num);
+        } while (nextLevel == _current_level_num);
 
         _current_level_num = nextLevel;
         _currentLevel = Levels[nextLevel];

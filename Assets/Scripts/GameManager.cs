@@ -14,15 +14,17 @@ public class GameManager : MonoBehaviour
 
     public static Healthbars Player1Health; //temporary
     public static Healthbars Player2Health; //temporary
+    public static ImageMoving Player1Icon;
+    public static ImageMoving Player2Icon;
 
-    public float OvertakeTime = 0.5f;
-    private float _time = 0;
+    public float OvertakeTime;
+    private float _time_of_overtake = 0;
 
     //health stuff
-    public float HealthTickDelay = 2;
-    public int HealthTickDamage = 2;
-    public int MaxHealth = 100;
-    public int OffScreenDamage = 20;
+    public float HealthTickDelay;
+    public int HealthTickDamage;
+    public int MaxHealth;
+    public int OffScreenDamage;
     private float _time_since_healthdrain = 0;
 
     private Camera _camera;
@@ -59,6 +61,8 @@ public class GameManager : MonoBehaviour
         _leader_num = 0;
         Player1Health = GameObject.Find("P1Health").GetComponent<Healthbars>();
         Player2Health = GameObject.Find("P2Health").GetComponent<Healthbars>();
+        Player1Icon = GameObject.Find("ObiWanHealthBarPic").GetComponent<ImageMoving>();
+        Player2Icon = GameObject.Find("AnakinHealthBarPic").GetComponent<ImageMoving>();
         //the point of player_components is we don't want to be calling GetComponent every Update cycle
         //apparently it can make the game laggy, so we want to "stash" those components
         int i = -1;
@@ -71,10 +75,10 @@ public class GameManager : MonoBehaviour
         _level_manager.UpdateCurrentLevel(0);
         _respawn_points.AddRange(_level_manager.GetRespawnPoints());
 
-        for (i=0; i<_djIcons.Length; i++)
-        {          
-            _djIcons[i].SetActive(true);           
-            _gIcons[i].SetActive(false);          
+        for (i = 0; i < _djIcons.Length; i++)
+        {
+            _djIcons[i].SetActive(true);
+            _gIcons[i].SetActive(false);
             _rIcons[i].SetActive(false);
         }
     }
@@ -89,15 +93,14 @@ public class GameManager : MonoBehaviour
                 //if overtaking occurs
                 if (player.transform.position.y > _leader.transform.position.y && player.name != _leader.name)
                 {
+					player.GetComponent<sound>().playSound("overtake");
                     _leader = player;
                     _leader_num = GetPlayerNumber(player);
-                    SetPositions(player.transform.position);
+                    Overtake(player.transform.position);
                     break;
                 }
             }
         }
-
-        
 
         //Camera Management
         _leader_height = _leader.transform.position.y;
@@ -114,7 +117,7 @@ public class GameManager : MonoBehaviour
             foreach (Vector3 respawnpoint in _level_manager.GetRespawnPoints())
                 _respawn_points.Add(new Vector3(respawnpoint.x, respawnpoint.y + _total_level_height, 0));
         }
-        
+
         //Respawn Management (Chasers falling off screen) (want this to be below camera management)
         foreach (PlayerComponents player in _player_components)
         {
@@ -124,7 +127,7 @@ public class GameManager : MonoBehaviour
                 {
                     player.Rb.velocity = new Vector3(0, 0, 0);
                     player.SetHealth(player.Health - OffScreenDamage);
-                    player.Reference.transform.position = FindClosetRespawnPoint(_leader_height - _camera.orthographicSize / 2);
+                    player.Reference.transform.position = FindClosetRespawnPoint(_leader_height - _camera.orthographicSize / 2f);
                 }
             }
         }
@@ -140,9 +143,15 @@ public class GameManager : MonoBehaviour
             if (player.Reference != null)
             {
                 if (player.Number == 1)
+                {
                     Player1Health.SetValue(player.Health);
+                    Player1Icon.NewYValue(Player1Health.GetValue());
+                }
                 else if (player.Number == 2)
+                {
                     Player2Health.SetValue(player.Health);
+                    Player2Icon.NewYValue(Player2Health.GetValue());
+                }
             }
         }
 
@@ -157,27 +166,21 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void SetPositions(Vector3 leaderPosition)
+    private void Overtake(Vector3 leaderPosition) //leaderPosition = position of new leader
     {
         Vector3 oldLeaderPosition = leaderPosition;
         Vector3 oldCameraPosition = _camera.transform.position;
-        Vector3 newLeaderPosition = FindClosetRespawnPoint(leaderPosition.y + _camera.orthographicSize / 2);
+        Vector3 newLeaderPosition = FindClosetRespawnPoint(leaderPosition.y + _camera.orthographicSize / 2f);
         Vector3 newCameraPosition = new Vector3(0, newLeaderPosition.y - _camera.orthographicSize / 3, -10);
-        Vector3 newChaserPosition = FindClosetRespawnPoint(newLeaderPosition.y - _camera.orthographicSize / 2);
-        foreach (GameObject player in _players)
-        {
-            if (player != _leader)
-            {
-                player.GetComponent<Rigidbody2D>().velocity = new Vector3(0, 0, 0);
-                player.transform.position = newChaserPosition;
-                //eventually add some fancy animation with this
-            }
-        }
-        _time = Time.time;
-        DisableRoles();
+
+        _time_of_overtake = Time.time;
+        _leader.GetComponent<LeaderMovement>().enabled = false;
         _leader.GetComponent<Rigidbody2D>().velocity = new Vector3(0, 0, 0);
         _leader.GetComponent<Rigidbody2D>().simulated = false;
+        _leader.GetComponent<Animator>().SetBool("Overtaking", true);
         StartCoroutine(Lerp(oldLeaderPosition, newLeaderPosition, oldCameraPosition, newCameraPosition));
+        StartCoroutine(ForceLeader());
+        ForceStun();
     }
 
     private IEnumerator Lerp(Vector3 oldLeaderPosition, Vector3 newLeaderPosition, Vector3 oldCameraPosition, Vector3 newCameraPosition)
@@ -185,25 +188,45 @@ public class GameManager : MonoBehaviour
         float time = 0;
         while (time <= OvertakeTime)
         {
-            time = Mathf.Abs(Time.time - _time);
+            time = Mathf.Abs(Time.time - _time_of_overtake);
             _leader.transform.position = Vector3.Lerp(oldLeaderPosition, newLeaderPosition, time / OvertakeTime);
             _camera.transform.position = Vector3.Lerp(oldCameraPosition, newCameraPosition, time / OvertakeTime);
             yield return null;
         }
+
         _leader.transform.position = newLeaderPosition;
         _camera.transform.position = newCameraPosition;
         SetRoles();
         _leader.GetComponent<Rigidbody2D>().simulated = true;
+        _leader.GetComponent<Animator>().SetBool("Overtaking", false);
     }
 
-    private void DisableRoles()
+    private IEnumerator ForceLeader()
+    {
+        GameObject forcefield = _leader.GetComponent<ChaserMovement>().Forcefield;
+        forcefield.SetActive(true);
+        forcefield.transform.localScale = new Vector3(0.25f, 0.25f, 1);
+        float time = 0;
+        while (time <= OvertakeTime)
+        {
+            forcefield.transform.localScale = new Vector3(0.25f, 0.25f, 1) + forcefield.transform.localScale;
+            time = Mathf.Abs(Time.time - _time_of_overtake);
+            yield return null;
+        }
+        forcefield.SetActive(false);
+    }
+
+    private void ForceStun() //Stun Chasers during overtake
     {
         foreach (PlayerComponents player in _player_components)
         {
-            player.Chaser.enabled = false;
-            player.Leader.enabled = false;
-            player.Gun.enabled = false;
-            player.Invincible = true;
+            if (player.Number != _leader_num)
+            {
+                player.Chaser.enabled = true;
+                player.Chaser.Stun(OvertakeTime);
+                player.Leader.enabled = false;
+                player.Gun.enabled = false;
+            }
         }
     }
 
@@ -216,10 +239,10 @@ public class GameManager : MonoBehaviour
                 _djIcons[player.Number - 1].SetActive(true);
                 _gIcons[player.Number - 1].SetActive(false);
                 _rIcons[player.Number - 1].SetActive(false);
+                player.Leader.FinishLine.SetActive(false);
                 player.Leader.enabled = false;
                 player.Gun.enabled = false;
                 player.Chaser.enabled = true;
-                player.Invincible = false;
             }
             else //set Leader
             {
@@ -228,6 +251,7 @@ public class GameManager : MonoBehaviour
                 _rIcons[player.Number - 1].SetActive(true);
                 player.Chaser.enabled = false;
                 player.Leader.enabled = true;
+                player.Leader.FinishLine.SetActive(true);
                 player.Gun.enabled = true;
                 player.Invincible = false;
             }
@@ -237,13 +261,13 @@ public class GameManager : MonoBehaviour
     private void HealthUpdate()
     {
         if (_leader_num != 0)
-        foreach (PlayerComponents player in _player_components)
-        {
-            if (player.Number != _leader_num && player.Health > 0)
-                player.SetHealth(player.Health - HealthTickDamage);
-            if (player.Health <= 0)
-                Destroy(player.Reference.gameObject);
-        }
+            foreach (PlayerComponents player in _player_components)
+            {
+                if (player.Number != _leader_num && player.Health > 0)
+                    player.SetHealth(player.Health - HealthTickDamage);
+                if (player.Health <= 0)
+                    Destroy(player.Reference.gameObject);
+            }
         //Update Health Canvas (temporary)
     }
 
@@ -303,3 +327,4 @@ public class PlayerComponents
         Health = h;
     }
 }
+ 
