@@ -16,7 +16,7 @@ public class TutorialManager : MonoBehaviour
 
     void Update()
     {
-        //Camera Management
+        //Camera & Background Management
         _leader_height = Player1.transform.position.y;
         _camera_height = Camera.transform.position.y;
         if (_leader_height > _camera_height + Camera.orthographicSize * 0.5f) //leader height should be <= 3/4 of camera height
