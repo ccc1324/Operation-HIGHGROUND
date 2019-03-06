@@ -2752,6 +2752,10 @@ PrefabInstance:
       propertyPath: Forcefield
       value: 
       objectReference: {fileID: 230558269}
+    - target: {fileID: 2005075937, guid: 058f2845f5793b24c9c22cb57f5c9fa5, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: c31d29212668c124e8827901aedafa5a, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 058f2845f5793b24c9c22cb57f5c9fa5, type: 3}
 --- !u!1 &517617499
