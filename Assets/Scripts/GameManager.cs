@@ -155,15 +155,6 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        //Game Over Conditions
-        _playersLeft = GameObject.FindGameObjectsWithTag("Player");
-        if (_playersLeft.Length == 1)
-        {
-            if (GameObject.Find("Player1") != null) //Player 1 Won
-                SceneManager.LoadScene(4);
-            else if (GameObject.Find("Player2") != null) //Player 2 Won
-                SceneManager.LoadScene(5);
-        }
     }
 
     private void Overtake(Vector3 leaderPosition) //leaderPosition = position of new leader
@@ -266,9 +257,20 @@ public class GameManager : MonoBehaviour
                 if (player.Number != _leader_num && player.Health > 0)
                     player.SetHealth(player.Health - HealthTickDamage);
                 if (player.Health <= 0)
+                {
                     Destroy(player.Reference.gameObject);
+                    EndGame(player.Number);
+                }
             }
         //Update Health Canvas (temporary)
+    }
+
+    private void EndGame(int num)
+    {    
+        if (num == 2) //Player 1 Won
+            SceneManager.LoadScene(4);
+        else if (num == 1) //Player 2 Won
+            SceneManager.LoadScene(5);   
     }
 
     //Helper function that finds closest respawn point to a certain location
