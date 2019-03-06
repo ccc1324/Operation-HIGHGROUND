@@ -40,6 +40,7 @@ public class GameManager : MonoBehaviour
     private int _leader_num;
     private float _camera_height;
     private float _leader_height;
+    private bool _overtaking; //is overtaking occuring
 
     //level stuff
     public float LevelBuffer = 0; //height player needs to jump to get to next level
@@ -88,6 +89,8 @@ public class GameManager : MonoBehaviour
         //Overtaking management
         foreach (GameObject player in _players)
         {
+            if (_overtaking)
+                break;
             if (player != null)
             {
                 //if overtaking occurs
@@ -96,6 +99,7 @@ public class GameManager : MonoBehaviour
 					player.GetComponent<sound>().playSound("overtake");
                     _leader = player;
                     _leader_num = GetPlayerNumber(player);
+                    _overtaking = true;
                     Overtake(player.transform.position);
                     break;
                 }
@@ -107,6 +111,8 @@ public class GameManager : MonoBehaviour
         _camera_height = _camera.transform.position.y;
         if (_leader_height > _camera_height + _camera.orthographicSize * 0.5f) //leader height should be <= 3/4 of camera height
             _camera.transform.position = new Vector3(0, _leader_height - _camera.orthographicSize * 0.5f, -10f);
+        if (_leader_height < _camera_height) //leader height should be >= 1/2 of camera height
+            _camera.transform.position = new Vector3(0, _leader_height, -10f);
 
         //Level Management
         if (_leader_height > _level_manager.GetCurrentLevelHeight() + _total_level_height - _camera.orthographicSize / 1.5)
@@ -133,7 +139,7 @@ public class GameManager : MonoBehaviour
         }
 
         //Health Management
-        if (Time.time - _time_since_healthdrain >= HealthTickDelay)
+        if (Time.time - _time_since_healthdrain >= HealthTickDelay && !_overtaking)
         {
             HealthUpdate();
             _time_since_healthdrain = Time.time;
@@ -165,13 +171,13 @@ public class GameManager : MonoBehaviour
         Vector3 newCameraPosition = new Vector3(0, newLeaderPosition.y - _camera.orthographicSize / 3, -10);
 
         _time_of_overtake = Time.time;
-        _leader.GetComponent<LeaderMovement>().enabled = false;
+        _leader.GetComponent<ChaserMovement>().enabled = false;
         _leader.GetComponent<Rigidbody2D>().velocity = new Vector3(0, 0, 0);
         _leader.GetComponent<Rigidbody2D>().simulated = false;
         _leader.GetComponent<Animator>().SetBool("Overtaking", true);
         StartCoroutine(Lerp(oldLeaderPosition, newLeaderPosition, oldCameraPosition, newCameraPosition));
-        StartCoroutine(ForceLeader());
-        ForceStun();
+        StartCoroutine(ForceLeader()); //force circle animation
+        ForceStun(); //stun chasers
     }
 
     private IEnumerator Lerp(Vector3 oldLeaderPosition, Vector3 newLeaderPosition, Vector3 oldCameraPosition, Vector3 newCameraPosition)
@@ -190,6 +196,7 @@ public class GameManager : MonoBehaviour
         SetRoles();
         _leader.GetComponent<Rigidbody2D>().simulated = true;
         _leader.GetComponent<Animator>().SetBool("Overtaking", false);
+        _overtaking = false;
     }
 
     private IEnumerator ForceLeader()
