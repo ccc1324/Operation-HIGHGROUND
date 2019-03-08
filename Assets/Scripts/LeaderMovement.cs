@@ -113,25 +113,28 @@ public class LeaderMovement : MonoBehaviour
     private void Jump()
     {
 		//Play sound if able to jump
-		if (_normalJump || ((_touchingWallLeft || _touchingWallRight) && _wallJump))
-			_sound.playSound("jump");
+		//if (_normalJump || ((_touchingWallLeft || _touchingWallRight) && _wallJump))
+			
 
         if (_normalJump)
         {
-            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
+			_sound.playSound("jump");
+			_rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
             _normalJump = false;
             return;
         }
         if (_touchingWallLeft && _wallJump)
         {
-            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
+			_sound.playSound("wallJump");
+			_rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
             _wallJump = false;
             _animator.SetFloat("Walljumps", 0);
             return;
         }
         if (_touchingWallRight && _wallJump)
         {
-            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
+			_sound.playSound("wallJump");
+			_rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
             _wallJump = false;
             _animator.SetFloat("Walljumps", 0);
             return;

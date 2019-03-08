@@ -211,7 +211,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f543cf4dd8808b418a0583b5d894ef8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jump: {fileID: 8300000, guid: 3db4a87d7d15b9a4abbdceb3c8b86b89, type: 3}
+  jump: {fileID: 8300000, guid: 652f05df988a8aa42bb180ec113cde8b, type: 3}
+  dblJump: {fileID: 8300000, guid: 4ca4226dbf1866e409cdf37ccaceb400, type: 3}
+  wallJump: {fileID: 8300000, guid: fef83304e64fab34d91595c5d1eb41bf, type: 3}
   shoot: {fileID: 8300000, guid: c2a28d118e0fed54fb5b2e45d5034618, type: 3}
   stun: {fileID: 8300000, guid: 72549488f7abe7040b643d2351194466, type: 3}
   overtake: {fileID: 8300000, guid: 032f6b3430fe8794a8df61ad9f800f5b, type: 3}

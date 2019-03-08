@@ -122,24 +122,27 @@ public class ChaserMovement : MonoBehaviour
         if (_stunned)
             return;
 		//Play sound if able to jump
-		if (_normalJump || _airJump || ((_touchingWallLeft || _touchingWallRight) && _wallJump>0))
-			_sound.playSound("jump");
+		//if (_normalJump || _airJump || ((_touchingWallLeft || _touchingWallRight) && _wallJump>0))
+			
 
 		if (_normalJump)
         {
-            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
+			_sound.playSound("jump");
+			_rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
             _normalJump = false;
             return;
         }
         if (_touchingWallLeft && _wallJump > 0)
         {
-            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
+			_sound.playSound("wallJump");
+			_rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
             _wallJump -= 1;
             _animator.SetFloat("Walljumps", _wallJump);
             return;
         }
         if (_touchingWallRight && _wallJump > 0)
         {
+			_sound.playSound("wallJump");
             _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
             _wallJump -= 1;
             _animator.SetFloat("Walljumps", _wallJump);
@@ -147,7 +150,8 @@ public class ChaserMovement : MonoBehaviour
         }
         if (_airJump)
         {
-            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
+			_sound.playSound("dblJump");
+			_rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
             _airJump = false;
             return;
         }

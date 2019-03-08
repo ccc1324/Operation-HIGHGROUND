@@ -11,6 +11,8 @@ public class sound : MonoBehaviour
 	private AudioSource _audSource;
 	//public List<AudioClip> audioClips;
 	public AudioClip jump;
+	public AudioClip dblJump;
+	public AudioClip wallJump;
 	public AudioClip shoot;
 	public AudioClip stun;
 	public AudioClip overtake;
@@ -45,6 +47,12 @@ public class sound : MonoBehaviour
 			case "jump":
 				//_sr.sprite = sprites[1];
 				_audSource.PlayOneShot(jump, 0.2f);
+				break;
+			case "dblJump":
+				_audSource.PlayOneShot(dblJump, 0.2f);
+				break;
+			case "wallJump":
+				_audSource.PlayOneShot(wallJump, 0.2f);
 				break;
 			case "shoot":
 				_audSource.PlayOneShot(shoot, 0.2f);
