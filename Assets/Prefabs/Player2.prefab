@@ -178,7 +178,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ReloadTime: 1.5
-  BulletPrefab: {fileID: 4749954130578106137, guid: d1a11a1f4c25c9a4b8c4e873a8d51de6,
+  BulletPrefab: {fileID: 4749954130578106137, guid: 80975efe511eaaf46adb801d3e212d0e,
     type: 3}
 --- !u!95 &1168835022
 Animator:
