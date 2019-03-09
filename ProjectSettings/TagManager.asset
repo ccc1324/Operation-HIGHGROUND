@@ -9,6 +9,9 @@ TagManager:
   - DJ
   - G
   - R
+  - MusicTag
+  - video
+  - im
   layers:
   - Default
   - TransparentFX

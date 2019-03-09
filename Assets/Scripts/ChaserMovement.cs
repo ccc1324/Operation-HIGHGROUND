@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 
 public class ChaserMovement : MonoBehaviour
@@ -14,19 +15,15 @@ public class ChaserMovement : MonoBehaviour
 
     public float Move_Speed;
     public float Jump_Force;
+    public GameObject Forcefield;
     private int _player;
+    private Animator _animator;
     private Rigidbody2D _rigidbody;
     private Transform _transform;
     private Vector3 _facingRight = new Vector3(0, 0, 0);
     private Vector3 _facingLeft = new Vector3(0, 180, 0);
-    //private Animator _animator;
-    private animations _animator;
 
-    //Color stuff
-    private SpriteRenderer _playerSprite;
-	private Color _normColor;
-	private Color _stunColor;
-	public int iFrameTime = 2;
+	public float iFrameTime;
     private bool _invincible = false;
 
     private bool _grounded = false;
@@ -38,6 +35,8 @@ public class ChaserMovement : MonoBehaviour
     private bool _airJump = false;
     private bool _stunned = false;
 
+	private sound _sound;
+
     //Boxcast Debug Stuff
     //public Text Ground;
     //public Text Left;
@@ -45,24 +44,22 @@ public class ChaserMovement : MonoBehaviour
 
     void Start()
     {
+        Forcefield.SetActive(false);
         _player = PlayerController();
+        _animator = GetComponent<Animator>();
         _rigidbody = GetComponent<Rigidbody2D>();
         _transform = transform;
-        //_animator = GetComponent<Animator>();
-        _animator = GetComponent<animations>();
-
-		//More color stuff
-		_playerSprite = GetComponent<SpriteRenderer>();
-		_normColor = _playerSprite.color;
-		_stunColor = new Color(_normColor.r, _normColor.g, _normColor.b, 0.2f);
+		_sound = GetComponent<sound>();
 	}
 
     private void Update()
     {
         Vector2 position = new Vector2(transform.position.x, transform.position.y - 0.35f);
         _grounded = Physics2D.BoxCast(position, new Vector2(1.2f, 0.001f), 0, Vector2.down, 1.00f, 1) ? true : false;
+        _animator.SetBool("Grounded", _grounded);
         _touchingWallLeft = Physics2D.BoxCast(position, new Vector2(0.001f, 1.7f), 0, Vector2.left, 0.9f, 1) ? true : false;
         _touchingWallRight = Physics2D.BoxCast(position, new Vector2(0.001f, 1.7f), 0, Vector2.right, 0.9f, 1) ? true : false;
+        _animator.SetBool("TouchingWall", _touchingWallLeft || _touchingWallRight);
 
         //Boscast Debug Stuff
         //Ground.text = _grounded.ToString();
@@ -73,22 +70,25 @@ public class ChaserMovement : MonoBehaviour
         {
             _normalJump = true;
             _airJump = true;
-            _wallJump = 2;
+            RenewWallJumps();
         }
         if (_touchingWallLeft)
         {
             if (_wallJumpCounter == 1 || _wallJumpCounter == -1)
-                _wallJump = 2;
+                RenewWallJumps();
             _wallJumpCounter = 0;
         }
         if (_touchingWallRight)
         {
             if (_wallJumpCounter == 0 || _wallJumpCounter == -1)
-                _wallJump = 2;
+                RenewWallJumps();
             _wallJumpCounter = 1;
         }
         if (Input.GetButtonDown("JumpA_p" + _player) || Input.GetButtonDown("JumpB_p" + _player) && !_stunned)
-            Jump();          
+            Jump();
+
+        if (SceneManager.GetActiveScene().name == "Tutorial" && Input.GetButtonDown("StartButton" + _player))
+            SceneManager.LoadScene(0);
     }
 
     private void FixedUpdate()
@@ -112,37 +112,50 @@ public class ChaserMovement : MonoBehaviour
             _rigidbody.velocity = new Vector2(-Move_Speed * Time.fixedDeltaTime, _rigidbody.velocity.y);
             _transform.eulerAngles = _facingLeft;
         }
-        //_animator.SetBool("Running", true);
+        _animator.SetBool("Moving", true);
     }
 
     private void StopMoving()
     {
         _rigidbody.velocity = new Vector2(0, _rigidbody.velocity.y);
+        _animator.SetBool("Moving", false);
     }
 
     private void Jump()
     {
-        if (_normalJump)
+        if (_stunned)
+            return;
+		//Play sound if able to jump
+		//if (_normalJump || _airJump || ((_touchingWallLeft || _touchingWallRight) && _wallJump>0))
+			
+
+		if (_normalJump)
         {
-            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
+			_sound.playSound("jump");
+			_rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
             _normalJump = false;
             return;
         }
         if (_touchingWallLeft && _wallJump > 0)
         {
-            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
+			_sound.playSound("wallJump");
+			_rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
             _wallJump -= 1;
+            _animator.SetFloat("Walljumps", _wallJump);
             return;
         }
         if (_touchingWallRight && _wallJump > 0)
         {
+			_sound.playSound("wallJump");
             _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
             _wallJump -= 1;
+            _animator.SetFloat("Walljumps", _wallJump);
             return;
         }
         if (_airJump)
         {
-            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
+			_sound.playSound("dblJump");
+			_rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
             _airJump = false;
             return;
         }
@@ -152,28 +165,28 @@ public class ChaserMovement : MonoBehaviour
     {
 		if (!_stunned && !_invincible) //don't want people to be perma-stunned, and also makes it so that ParalyzeHeal won't be called randomly
 		{
-            _animator.changeSprite("stun");
 			_stunned = true;
-			_playerSprite.color = _stunColor;
 			Invoke("ParalyzeHeal", stunDuration);
+            _animator.SetBool("Stunned", true);
+            _sound.playSound("stun");
 		}
     }
 
     public void ParalyzeHeal()
     {
-        _animator.changeSprite("invul");
         _stunned = false;
-		_invincible = true;
-		_playerSprite.color = Color.gray;
-		Invoke("endIFrames", iFrameTime);
+        _animator.SetBool("Stunned", false);
+        _invincible = true;
+        Forcefield.SetActive(true);
+        Forcefield.transform.localScale = new Vector3(0.5f, 0.5f, 1);
+        Invoke("endIFrames", iFrameTime);
 	}
 
 	private void endIFrames()
 	{
-        _animator.changeSprite("idle");
         _invincible = false;
-		_playerSprite.color = _normColor;
-	}
+        Forcefield.SetActive(false);
+    }
 
 
 	private int PlayerController()
@@ -195,4 +208,9 @@ public class ChaserMovement : MonoBehaviour
         }
     }
 
+    private void RenewWallJumps()
+    {
+        _wallJump = 2;
+        _animator.SetFloat("Walljumps", 2);
+    }
 }

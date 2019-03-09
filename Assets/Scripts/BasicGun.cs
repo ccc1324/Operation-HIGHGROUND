@@ -9,7 +9,7 @@ public class BasicGun : MonoBehaviour
      * Will allow a player to shoot the attached bullet
      * Sets rotation of the bullet to direction player is shooting
      */
-    public float ReloadTime = 1;
+    public float ReloadTime;
     public GameObject BulletPrefab;
     private int _player;
     private Transform _holder;
@@ -17,10 +17,13 @@ public class BasicGun : MonoBehaviour
     private float _time_last_shot = -100; //initialized to -100 so that there isn't an initial reload time
     public static GunReload gr;
 
+	private sound _sound;
+
     void Start() {
         _player = PlayerController();
         _holder = transform;
-        _cam = FindObjectOfType<Camera>();    
+        _cam = FindObjectOfType<Camera>();
+		_sound = GetComponent<sound>();
     }
 
     void Update()
@@ -36,8 +39,8 @@ public class BasicGun : MonoBehaviour
                 _time_last_shot = Time.time;
             }      
         }
-        if (gr.GetValue() < 60)
-            gr.AddValue(1);
+        if (Time.time - _time_last_shot < ReloadTime)
+            gr.SetValue(((Time.time - _time_last_shot)/ReloadTime)*60);
     }
 
     public void Shoot()
@@ -57,6 +60,10 @@ public class BasicGun : MonoBehaviour
         GameObject bulleta = Instantiate(BulletPrefab, _holder.position, rotationa);
         GameObject bulletb = Instantiate(BulletPrefab, _holder.position, rotationb);
         GameObject bulletc = Instantiate(BulletPrefab, _holder.position, rotationc);
+
+		//Play shoot SFX
+		_sound.playSound("shoot");
+		
     }
 
     private int PlayerController()

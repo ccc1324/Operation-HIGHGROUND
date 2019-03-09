@@ -5,28 +5,25 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
   - enabled: 1
     path: Assets/Scenes/FinalGameScenes/TitleScreen.unity
     guid: b79ac65296305ba46b179b40ca6e5e5c
-  - enabled: 0
-    path: Assets/Scenes/TestSceneD.unity
-    guid: b71013ca14c73614f91d5120b7bb87df
   - enabled: 1
     path: Assets/Scenes/TestSceneC.unity
     guid: d550cd4aa44a7e94ea518d4341f28b62
-  - enabled: 1
-    path: Assets/Scenes/FinalGameScenes/HowToPlay.unity
-    guid: 322b687fcf19b26448ad0c05f09d0374
-  - enabled: 1
-    path: Assets/Scenes/FinalGameScenes/Controls.unity
-    guid: d9d1f58ac2dd88646962a06df3ee7093
   - enabled: 1
     path: Assets/Scenes/FinalGameScenes/Player1Win.unity
     guid: 3489c9d67187fef41909659a4c8e36cd
   - enabled: 1
     path: Assets/Scenes/FinalGameScenes/Player2Win.unity
     guid: 0260f69f5a1d1e34ea7fed0cf2e7a6a2
+  - enabled: 1
+    path: Assets/Scenes/EasyLevel.unity
+    guid: 1df748805c670ae4e846916960e27c98
+  - enabled: 1
+    path: Assets/Scenes/FinalGameScenes/StageSelect.unity
+    guid: 2f082ffeade99014aa63af9fc7e28a84
+  - enabled: 1
+    path: Assets/Scenes/FinalGameScenes/Tutorial.unity
+    guid: ed5d18a366eb7de429800d593349ab5e
   m_configObjects: {}

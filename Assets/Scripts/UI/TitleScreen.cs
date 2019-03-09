@@ -14,6 +14,8 @@ public class TitleScreen : MonoBehaviour
         startbutton.onClick.AddListener(StartGame);
         var controlsbutton = transform.Find("ControlsButton").gameObject.GetComponent<Button>();
         controlsbutton.onClick.AddListener(ControlsScreen);
+        var creditsbutton = transform.Find("CreditsButton").gameObject.GetComponent<Button>();
+        creditsbutton.onClick.AddListener(CreditsScreen);
         var quitbutton = transform.Find("QuitButton").gameObject.GetComponent<Button>();
         quitbutton.onClick.AddListener(QuitGame);
     }
@@ -26,12 +28,17 @@ public class TitleScreen : MonoBehaviour
 
     private static void StartGame()
     {
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene(5);
     }
 
     private static void ControlsScreen()
     {
-        SceneManager.LoadScene(2);
+        SceneManager.LoadScene(6);
+    }
+
+    private static void CreditsScreen()
+    {
+        //SceneManager.LoadScene(7);
     }
 
     private static void QuitGame()
