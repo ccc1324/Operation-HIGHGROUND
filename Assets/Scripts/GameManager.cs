@@ -64,6 +64,7 @@ public class GameManager : MonoBehaviour
         Player2Health = GameObject.Find("P2Health").GetComponent<Healthbars>();
         Player1Icon = GameObject.Find("ObiWanHealthBarPic").GetComponent<ImageMoving>();
         Player2Icon = GameObject.Find("AnakinHealthBarPic").GetComponent<ImageMoving>();
+
         //the point of player_components is we don't want to be calling GetComponent every Update cycle
         //apparently it can make the game laggy, so we want to "stash" those components
         int i = -1;
@@ -273,11 +274,15 @@ public class GameManager : MonoBehaviour
     }
 
     private void EndGame(int num)
-    {    
+    {
         if (num == 2) //Player 1 Won
+        {
             SceneManager.LoadScene(2);
+        }
         else if (num == 1) //Player 2 Won
-            SceneManager.LoadScene(3);   
+        {
+            SceneManager.LoadScene(3);
+        }
     }
 
     //Helper function that finds closest respawn point to a certain location
