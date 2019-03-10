@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 
 public class LeaderMovement : MonoBehaviour
@@ -28,44 +29,59 @@ public class LeaderMovement : MonoBehaviour
     //temporary solution
     public GameObject FinishLine;
 
+	private sound _sound;
+
     void Start()
     {
         _player = PlayerController();
         _rigidbody = GetComponent<Rigidbody2D>();
         _transform = transform;
         _animator = GetComponent<Animator>();
+		_sound = GetComponent<sound>();
     }
 
     private void Update()
     {
         Vector2 position = new Vector2(transform.position.x, transform.position.y - 0.35f);
         _grounded = Physics2D.BoxCast(position, new Vector2(1.2f, 0.001f), 0, Vector2.down, 1.00f, 1) ? true : false;
+        _animator.SetBool("Grounded", _grounded);
         _touchingWallLeft = Physics2D.BoxCast(position, new Vector2(0.001f, 1.7f), 0, Vector2.left, 0.9f, 1) ? true : false;
         _touchingWallRight = Physics2D.BoxCast(position, new Vector2(0.001f, 1.7f), 0, Vector2.right, 0.9f, 1) ? true : false;
+        _animator.SetBool("TouchingWall", _touchingWallLeft || _touchingWallRight);
 
         if (_grounded)
         {
             _normalJump = true;
             _wallJump = true;
+            _animator.SetFloat("Walljumps", 1);
         }
         if (_touchingWallLeft)
         {
-            if (_wallJumpCounter == 1)
+            if (_wallJumpCounter == 1 || _wallJumpCounter == -1)
+            {
                 _wallJump = true;
+                _animator.SetFloat("Walljumps", 1);
+            }
             _wallJumpCounter = 0;
         }
         if (_touchingWallRight)
         {
-            if (_wallJumpCounter == 0)
+            if (_wallJumpCounter == 0 || _wallJumpCounter == -1)
+            {
                 _wallJump = true;
+                _animator.SetFloat("Walljumps", 1);
+            }
             _wallJumpCounter = 1;
         }
 
         if (Input.GetButtonDown("JumpA_p" + _player) || Input.GetButtonDown("JumpB_p" + _player))
                 Jump();
 
-        //temporary
-        FinishLine.transform.position = new Vector2 (-6.4f, transform.position.y);
+        //red/blue bar
+        FinishLine.transform.position = new Vector2 (0f, transform.position.y);
+
+        if (SceneManager.GetActiveScene().name == "Tutorial" && Input.GetButtonDown("StartButton" + _player))
+            SceneManager.LoadScene(0);
     }
 
     private void FixedUpdate()
@@ -89,32 +105,42 @@ public class LeaderMovement : MonoBehaviour
             _rigidbody.velocity = new Vector2(-Move_Speed * Time.fixedDeltaTime, _rigidbody.velocity.y);
             _transform.eulerAngles = _facingLeft;
         }
-        _animator.SetBool("Running", true);
+        _animator.SetBool("Moving", true);
     }
 
     private void StopMoving()
     {
         _rigidbody.velocity = new Vector2(0, _rigidbody.velocity.y);
+        _animator.SetBool("Moving", false);
     }
 
     private void Jump()
     {
+		//Play sound if able to jump
+		//if (_normalJump || ((_touchingWallLeft || _touchingWallRight) && _wallJump))
+			
+
         if (_normalJump)
         {
-            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
+			_sound.playSound("jump");
+			_rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
             _normalJump = false;
             return;
         }
         if (_touchingWallLeft && _wallJump)
         {
-            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
+			_sound.playSound("wallJump");
+			_rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
             _wallJump = false;
+            _animator.SetFloat("Walljumps", 0);
             return;
         }
         if (_touchingWallRight && _wallJump)
         {
-            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
+			_sound.playSound("wallJump");
+			_rigidbody.velocity = new Vector2(_rigidbody.velocity.x, Jump_Force);
             _wallJump = false;
+            _animator.SetFloat("Walljumps", 0);
             return;
         }
     }

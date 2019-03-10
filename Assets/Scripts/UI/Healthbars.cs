@@ -20,6 +20,11 @@ public class Healthbars : MonoBehaviour
         s.value = v;
     }
 
+    public float GetValue()
+    {
+        return s.value;
+    }
+
     // Update is called once per frame
     void Update()
     {
