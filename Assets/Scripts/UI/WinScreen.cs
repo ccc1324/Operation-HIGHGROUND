@@ -14,6 +14,7 @@ public class WinScreen : MonoBehaviour
     GameObject wintext;
     Button button1;
     Button button2;
+    Button button3;
     float time_since_start;
     float time_until_video_ends;
 
@@ -36,10 +37,13 @@ public class WinScreen : MonoBehaviour
         button1.onClick.AddListener(Play);
         button2 = transform.Find("QuitButton").gameObject.GetComponent<Button>();
         button2.onClick.AddListener(Quit);
+        button3 = transform.Find("ControlsButton").gameObject.GetComponent<Button>();
+        button3.onClick.AddListener(Controls);
         image.SetActive(false);
         wintext.SetActive(false);
         button1.gameObject.SetActive(false);
         button2.gameObject.SetActive(false);
+        button3.gameObject.SetActive(false);
         canUseButtons = false;
         time_since_start = Time.time;
     }
@@ -61,6 +65,7 @@ public class WinScreen : MonoBehaviour
             image.SetActive(true);
             button1.gameObject.SetActive(true);
             button2.gameObject.SetActive(true);
+            button3.gameObject.SetActive(true);
             wintext.SetActive(true);
             canUseButtons = true;
         }
@@ -79,6 +84,11 @@ public class WinScreen : MonoBehaviour
     private static void Quit()
     {
         SceneManager.LoadScene(0);
+    }
+
+    private static void Controls()
+    {
+        SceneManager.LoadScene(6);
     }
 
 }

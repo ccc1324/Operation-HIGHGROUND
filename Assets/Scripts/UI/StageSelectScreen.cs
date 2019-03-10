@@ -39,6 +39,9 @@ public class StageSelectScreen : MonoBehaviour
         text1.SetActive(false);
         outline2.SetActive(false);
         text2.SetActive(false);
+
+        eventSys.SetSelectedGameObject(selectedObj);
+        buttonSelected = true;
     }
 
     // Update is called once per frame
