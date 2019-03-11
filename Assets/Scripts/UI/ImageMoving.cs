@@ -19,7 +19,7 @@ public class ImageMoving : MonoBehaviour
 
     public void NewYValue(float v)
     {
-        newY = (-148 + (v - 50) * 4.2f) + 21;
+        newY = (-226.2f + (v - 50) * 6.287f) + 33;
         currentPosition.anchoredPosition = new Vector2(x, newY);
     }
 
