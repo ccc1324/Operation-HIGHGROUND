@@ -26,4 +26,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/FinalGameScenes/Tutorial.unity
     guid: ed5d18a366eb7de429800d593349ab5e
+  - enabled: 1
+    path: Assets/Scenes/FinalGameScenes/CreditsScreen.unity
+    guid: 8f8df2f4cf587aa40aa10a2d7dabfbd5
   m_configObjects: {}

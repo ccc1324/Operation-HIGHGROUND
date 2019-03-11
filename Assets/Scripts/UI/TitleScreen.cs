@@ -54,7 +54,7 @@ public class TitleScreen : MonoBehaviour
 
     private static void CreditsScreen()
     {
-        //SceneManager.LoadScene(7);
+        SceneManager.LoadScene(7);
     }
 
     private static void QuitGame()
