@@ -52,7 +52,7 @@ public class sound : MonoBehaviour
 				_audSource.PlayOneShot(dblJump, 0.2f);
 				break;
 			case "wallJump":
-				_audSource.PlayOneShot(wallJump, 0.1f);
+				_audSource.PlayOneShot(wallJump, 0.4f);
 				break;
 			case "shoot":
 				_audSource.PlayOneShot(shoot, 0.2f);
