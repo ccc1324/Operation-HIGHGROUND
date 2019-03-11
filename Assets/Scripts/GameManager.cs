@@ -31,9 +31,12 @@ public class GameManager : MonoBehaviour
     private LevelManager _level_manager;
     private GameObject[] _players;
     private GameObject[] _playersLeft;
-    private GameObject[] _djIcons;
-    private GameObject[] _gIcons;
-    private GameObject[] _rIcons;
+    private GameObject _djIcon1;
+    private GameObject _gIcon1;
+    private GameObject _rIcon1;
+    private GameObject _djIcon2;
+    private GameObject _gIcon2;
+    private GameObject _rIcon2;
     private List<PlayerComponents> _player_components;
 
     private GameObject _leader;
@@ -54,9 +57,13 @@ public class GameManager : MonoBehaviour
         _camera_height = _camera.transform.position.y;
         _level_manager = FindObjectOfType<LevelManager>();
         _players = GameObject.FindGameObjectsWithTag("Player");
-        _djIcons = GameObject.FindGameObjectsWithTag("DJ");
-        _gIcons = GameObject.FindGameObjectsWithTag("G");
-        _rIcons = GameObject.FindGameObjectsWithTag("R");
+        _djIcon1 = GameObject.Find("DoubleJump1");
+        _djIcon2 = GameObject.Find("DoubleJump2");
+        _gIcon1 = GameObject.Find("Gun1");
+        _gIcon2 = GameObject.Find("Gun2");
+        _rIcon1 = GameObject.Find("Reload1");
+        _rIcon2 = GameObject.Find("Reload2");
+
         _player_components = new List<PlayerComponents>();
         _leader = GameObject.Find("Fake Leader");
         _leader_num = 0;
@@ -77,12 +84,12 @@ public class GameManager : MonoBehaviour
         _level_manager.UpdateCurrentLevel(0);
         _respawn_points.AddRange(_level_manager.GetRespawnPoints());
 
-        for (i = 0; i < _djIcons.Length; i++)
-        {
-            _djIcons[i].SetActive(true);
-            _gIcons[i].SetActive(false);
-            _rIcons[i].SetActive(false);
-        }
+        _djIcon1.SetActive(true);
+        _djIcon2.SetActive(true);
+        _gIcon1.SetActive(false);
+        _gIcon2.SetActive(false);
+        _rIcon1.SetActive(false);
+        _rIcon2.SetActive(false);
     }
 
     private void Update()
@@ -235,9 +242,6 @@ public class GameManager : MonoBehaviour
         {
             if (player.Number != _leader_num) //set Chasers
             {
-                _djIcons[player.Number - 1].SetActive(true);
-                _gIcons[player.Number - 1].SetActive(false);
-                _rIcons[player.Number - 1].SetActive(false);
                 player.Leader.FinishLine.SetActive(false);
                 player.Leader.enabled = false;
                 player.Gun.enabled = false;
@@ -245,15 +249,30 @@ public class GameManager : MonoBehaviour
             }
             else //set Leader
             {
-                _djIcons[player.Number - 1].SetActive(false);
-                _gIcons[player.Number - 1].SetActive(true);
-                _rIcons[player.Number - 1].SetActive(true);
                 player.Chaser.enabled = false;
                 player.Leader.enabled = true;
                 player.Leader.FinishLine.SetActive(true);
                 player.Gun.enabled = true;
                 player.Invincible = false;
             }
+        }
+        if (_leader_num == 1)
+        {
+            _djIcon1.SetActive(false);
+            _djIcon2.SetActive(true);
+            _gIcon1.SetActive(true);
+            _gIcon2.SetActive(false);
+            _rIcon1.SetActive(true);
+            _rIcon2.SetActive(false);
+        }
+        else if (_leader_num == 2)
+        {
+            _djIcon1.SetActive(true);
+            _djIcon2.SetActive(false);
+            _gIcon1.SetActive(false);
+            _gIcon2.SetActive(true);
+            _rIcon1.SetActive(false);
+            _rIcon2.SetActive(true);
         }
     }
 
